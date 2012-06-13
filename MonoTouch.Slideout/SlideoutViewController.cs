@@ -31,12 +31,59 @@ namespace MonoTouch.Slideout
     /// </summary>
     public class SlideoutViewController : UIViewController
     {
-        private readonly UIViewController _internalContentView;
-        private readonly UIViewController _internalMenuView;
+        private readonly UIViewController _internalTopView;
+        private readonly ProxyNavigationController _internalMenuView;
         private readonly UITapGestureRecognizer _tapGesture;
+        private readonly UIPanGestureRecognizer _panGesture;
+
+        private UINavigationController _internalTopNavigation;
         private UIViewController _externalContentView;
         private UIViewController _externalMenuView;
-        private UINavigationController _navigation;
+
+        ///<summary>
+        /// A proxy class for the navigation controller.
+        /// This allows the menu view to make requests to the navigation controller
+        /// and have them forwarded to the topview.
+        ///</summary>
+        private class ProxyNavigationController : UINavigationController
+        {
+            /// <summary>
+            /// Gets or sets the parent controller.
+            /// </summary>
+            /// <value>
+            /// The parent controller.
+            /// </value>
+            public SlideoutViewController ParentController { get; set; }
+
+            /// <summary>
+            /// Sets the controller.
+            /// </summary>
+            /// <param name='viewController'>
+            /// View controller.
+            /// </param>
+            public void SetController(UIViewController viewController)
+            {
+                base.PopToRootViewController(false);
+                base.PushViewController(viewController, false);
+            }
+
+            /// <Docs>
+            /// To be added.
+            /// </Docs>
+            /// <summary>
+            /// To be added.
+            /// </summary>
+            /// <param name='viewController'>
+            /// View controller.
+            /// </param>
+            /// <param name='animated'>
+            /// Animated.
+            /// </param>
+            public override void PushViewController (UIViewController viewController, bool animated)
+            {
+                ParentController.SelectView(viewController);
+            }
+        }
 
         /// <summary>
         /// Gets or sets the current view.
@@ -44,7 +91,7 @@ namespace MonoTouch.Slideout
         /// <value>
         /// The current view.
         /// </value>
-        public UIViewController CurrentView
+        public UIViewController TopView
         {
             get { return _externalContentView; }
             set 
@@ -68,13 +115,7 @@ namespace MonoTouch.Slideout
             {
                 if (_externalMenuView == value)
                     return;
-                foreach (var x in _internalMenuView.View.Subviews)
-                    x.RemoveFromSuperview();
-                foreach (var x in _internalMenuView.ChildViewControllers)
-                    x.RemoveFromParentViewController();
-
-                _internalMenuView.AddChildViewController(value);
-                _internalMenuView.View.AddSubview(value.View);
+                _internalMenuView.SetController(value);
                 _externalMenuView = value;
             }
         }
@@ -112,21 +153,107 @@ namespace MonoTouch.Slideout
             SlideSpeed = 0.2f;
             SlideWidth = 260f;
 
-            _internalContentView = new UIViewController();
-            _internalContentView.View.UserInteractionEnabled = true;
-            _internalContentView.View.Layer.MasksToBounds = false;
-            _internalContentView.View.Layer.ShadowOffset = new System.Drawing.SizeF(-5, 0);
-            _internalContentView.View.Layer.ShadowRadius = 4.0f;
-            _internalContentView.View.Layer.ShadowOpacity = 0.5f;
-            _internalContentView.View.Layer.ShadowColor = UIColor.Black.CGColor;
+            _internalMenuView = new ProxyNavigationController() { ParentController = this };
+            _internalMenuView.SetNavigationBarHidden(true, false);
 
-            _navigation = new UINavigationController();
-
-            _internalMenuView = new UIViewController();
+            _internalTopView = new UIViewController();
+            _internalTopView.View.UserInteractionEnabled = true;
+            _internalTopView.View.Layer.MasksToBounds = false;
+            _internalTopView.View.Layer.ShadowOffset = new System.Drawing.SizeF(-5, 0);
+            _internalTopView.View.Layer.ShadowRadius = 4.0f;
+            _internalTopView.View.Layer.ShadowOpacity = 0.5f;
+            _internalTopView.View.Layer.ShadowColor = UIColor.Black.CGColor;
 
             _tapGesture = new UITapGestureRecognizer();
             _tapGesture.AddTarget(() => Hide());
             _tapGesture.NumberOfTapsRequired = 1;
+
+            _panGesture = new UIPanGestureRecognizer();
+            _panGesture.MaximumNumberOfTouches = 1;
+            _panGesture.MinimumNumberOfTouches = 1;
+            _panGesture.AddTarget(() => Pan(_internalTopView.View));
+            _internalTopView.View.AddGestureRecognizer(_panGesture);
+        }
+
+        //Helper variables for the method below
+        private float panOriginX = 0.0f;
+        private bool ignorePan = false;
+
+        /// <summary>
+        /// Pan the specified view.
+        /// </summary>
+        /// <param name='view'>
+        /// View.
+        /// </param>
+        private void Pan(UIView view)
+        {
+            if (_panGesture.State == UIGestureRecognizerState.Began)
+            {
+                panOriginX = view.Frame.X;
+                ignorePan = false;
+
+                if (!Visible)
+                {
+                    var touch = _panGesture.LocationOfTouch(0, view);
+                    if (touch.Y > 44.0f)
+                        ignorePan = true;
+                }
+
+            }
+            else if (!ignorePan && (_panGesture.State == UIGestureRecognizerState.Changed))
+            {
+                var t = _panGesture.TranslationInView(view).X;
+
+                if (t > 0 && Visible)
+                    t = 0;
+                else if (t < 0 && !Visible)
+                    t = 0;
+
+                view.Frame = new RectangleF(panOriginX + t, view.Frame.Y, view.Frame.Width, view.Frame.Height);
+            }
+            else if (!ignorePan && (_panGesture.State == UIGestureRecognizerState.Ended || _panGesture.State == UIGestureRecognizerState.Cancelled))
+            {
+                var velocity = Math.Abs(_panGesture.VelocityInView(view).X);
+                if (velocity > 800.0f)
+                {
+                    if (Visible)
+                        Hide();
+                    else
+                        Show();
+                    return;
+                }
+
+                if (Visible)
+                {
+                    if (view.Frame.X < _internalMenuView.View.Frame.Width / 2)
+                    {
+                        Hide();
+                        return;
+                    }
+                    else
+                    {
+                        UIView.Animate(SlideSpeed, 0, UIViewAnimationOptions.CurveEaseInOut, () => {
+                            view.Frame = new System.Drawing.RectangleF(SlideWidth, 0, view.Frame.Width, view.Frame.Height); 
+                        }, () => { });
+                        return;
+                    }
+                }
+                else
+                {
+                    if (view.Frame.X > _internalMenuView.View.Frame.Width / 2)
+                    {
+                        Show();
+                        return;
+                    }
+                    else
+                    {
+                        UIView.Animate(SlideSpeed, 0, UIViewAnimationOptions.CurveEaseInOut, () => {
+                            view.Frame = new System.Drawing.RectangleF(0, 0, view.Frame.Width, view.Frame.Height);
+                        }, () => { });
+                        return;
+                    }
+                }
+            }
         }
 
         /// <Docs>
@@ -139,7 +266,7 @@ namespace MonoTouch.Slideout
         {
             base.ViewDidLoad ();
 
-            _internalContentView.View.Frame = new RectangleF(0, 0, this.View.Frame.Width, this.View.Frame.Height);
+            _internalTopView.View.Frame = new RectangleF(0, 0, this.View.Frame.Width, this.View.Frame.Height);
             _internalMenuView.View.Frame = new System.Drawing.RectangleF(0, 0, SlideWidth, this.View.Frame.Height);
 
             //Add the list View
@@ -147,11 +274,8 @@ namespace MonoTouch.Slideout
             this.View.AddSubview(_internalMenuView.View);
 
             //Add the parent view
-            this.AddChildViewController(_internalContentView);
-            this.View.AddSubview(_internalContentView.View);
-
-            //if (CurrentView != null)
-            //    SelectView(CurrentView);
+            this.AddChildViewController(_internalTopView);
+            this.View.AddSubview(_internalTopView.View);
         }
 
         /// <summary>
@@ -164,7 +288,7 @@ namespace MonoTouch.Slideout
                 return;
             Visible = true;
 
-            var view = _internalContentView.View;
+            var view = _internalTopView.View;
             UIView.Animate(SlideSpeed, 0, UIViewAnimationOptions.CurveEaseInOut, () => {
                 view.Frame = new System.Drawing.RectangleF(SlideWidth, 0, view.Frame.Width, view.Frame.Height);
             }, () => {
@@ -182,18 +306,25 @@ namespace MonoTouch.Slideout
         /// </param>
         public void SelectView(UIViewController view)
         {
-            foreach (var x in _internalContentView.View.Subviews)
-                x.RemoveFromSuperview();
-            foreach (var x in _internalContentView.ChildViewControllers)
-                x.RemoveFromParentViewController();
-
-            if (view != null)
+            if (_internalTopNavigation != null)
             {
-                _internalContentView.AddChildViewController(view);
-                _internalContentView.View.AddSubview(view.View);
+                _internalTopNavigation.RemoveFromParentViewController();
+                _internalTopNavigation.View.RemoveFromSuperview();
+                _internalTopNavigation.Dispose();
             }
 
+            _internalTopNavigation = new UINavigationController(view);
+            _internalTopNavigation.View.Frame = new RectangleF(0, 0, _internalTopView.View.Frame.Width, _internalTopView.View.Frame.Height);
+            _internalTopView.AddChildViewController(_internalTopNavigation);
+            _internalTopView.View.AddSubview(_internalTopNavigation.View);
+
+            view.NavigationItem.LeftBarButtonItem = new UIBarButtonItem(UIImage.FromBundle("/Images/three_lines.png"), UIBarButtonItemStyle.Plain, (s,e) => {
+                Show();
+            });
+
             _externalContentView = view;
+
+            Hide ();
         }
 
         /// <summary>
@@ -206,7 +337,7 @@ namespace MonoTouch.Slideout
                 return;
             Visible = false;
 
-            var view = _internalContentView.View;
+            var view = _internalTopView.View;
             UIView.Animate(SlideSpeed, 0, UIViewAnimationOptions.CurveEaseInOut, () => {
                 view.Frame = new System.Drawing.RectangleF(0, 0, view.Frame.Width, view.Frame.Height);
             }, () => {

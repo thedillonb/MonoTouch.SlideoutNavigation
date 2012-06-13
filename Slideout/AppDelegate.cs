@@ -25,6 +25,7 @@ using System.Linq;
 using MonoTouch.Foundation;
 using MonoTouch.UIKit;
 using MonoTouch.Slideout;
+using MonoTouch.Dialog;
 
 namespace Slideout.Sample
 {
@@ -36,9 +37,8 @@ namespace Slideout.Sample
     {
         // class-level declarations
         UIWindow window;
-        SlideoutNavigationController nav;
         SlideoutViewController menu;
-        DummyController ctrl;
+        UITableViewController ctrl;
 
         // This is the main entry point of the application.
         static void Main (string[] args)
@@ -58,9 +58,10 @@ namespace Slideout.Sample
         public override bool FinishedLaunching (UIApplication app, NSDictionary options)
         {
             window = new UIWindow (UIScreen.MainScreen.Bounds);
-            ctrl = new DummyController() { Title = "Hello" };
+            ctrl = new UITableViewController() { Title = "Hello" };
             menu = new SlideoutViewController();
-            nav = new SlideoutNavigationController(menu, ctrl);
+            menu.TopView = ctrl;
+            menu.MenuView = new DummyController();
 
             //Create some sort of menu button
             //menu.CurrentView = nav;
@@ -73,9 +74,23 @@ namespace Slideout.Sample
         }
     }
 
-    public class DummyController : UITableViewController
+    public class DummyController : DialogViewController
     {
-        public DummyController() : base() { }
+        public DummyController() 
+            : base(UITableViewStyle.Plain,new RootElement(""))
+        {
+        }
+
+        public override void ViewDidLoad ()
+        {
+            base.ViewDidLoad ();
+
+            Root.Add(new Section() {
+                new StyledStringElement("Home", () => { NavigationController.PushViewController(new UITableViewController() { Title = "Home!" }, true); }),
+                new StyledStringElement("About", () => { NavigationController.PushViewController(new UITableViewController() { Title = "About!" }, true); }),
+                new StyledStringElement("Stuff", () => { NavigationController.PushViewController(new UITableViewController() { Title = "Stuff!" }, true); })
+            });
+        }
     }
 }
 
