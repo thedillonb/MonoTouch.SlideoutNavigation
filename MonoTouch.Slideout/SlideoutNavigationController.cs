@@ -24,12 +24,12 @@ using MonoTouch.Foundation;
 using System.Drawing;
 
 
-namespace MonoTouch.Slideout
+namespace MonoTouch.SlideoutNavigation
 {
     /// <summary>
     /// Slideout view controller.
     /// </summary>
-    public class SlideoutViewController : UIViewController
+    public class SlideoutNavigationController : UIViewController
     {
         private readonly UIViewController _internalTopView;
         private readonly ProxyNavigationController _internalMenuView;
@@ -53,7 +53,7 @@ namespace MonoTouch.Slideout
             /// <value>
             /// The parent controller.
             /// </value>
-            public SlideoutViewController ParentController { get; set; }
+            public SlideoutNavigationController ParentController { get; set; }
 
             /// <summary>
             /// Sets the controller.
@@ -147,8 +147,7 @@ namespace MonoTouch.Slideout
         /// <summary>
         /// Initializes a new instance of the <see cref="MonoTouch.Slideout.SlideoutViewController"/> class.
         /// </summary>
-        public SlideoutViewController()
-            : base()
+        public SlideoutNavigationController()
         {
             SlideSpeed = 0.2f;
             SlideWidth = 260f;
@@ -347,6 +346,19 @@ namespace MonoTouch.Slideout
             });
         }
 
+        /// <summary>
+        /// Shoulds the autorotate to interface orientation.
+        /// </summary>
+        /// <returns>
+        /// The autorotate to interface orientation.
+        /// </returns>
+        /// <param name='toInterfaceOrientation'>
+        /// If set to <c>true</c> to interface orientation.
+        /// </param>
+        public override bool ShouldAutorotateToInterfaceOrientation (UIInterfaceOrientation toInterfaceOrientation)
+        {
+            return true;
+        }
 
     }
 }

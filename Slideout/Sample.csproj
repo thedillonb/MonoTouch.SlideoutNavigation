@@ -89,9 +89,9 @@
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
-    <ProjectReference Include="..\MonoTouch.Slideout\MonoTouch.Slideout.csproj">
+    <ProjectReference Include="..\MonoTouch.Slideout\MonoTouch.SlideoutNavigation.csproj">
       <Project>{6D7B9B53-CFEF-46BE-A608-14A4A1381CF6}</Project>
-      <Name>MonoTouch.Slideout</Name>
+      <Name>MonoTouch.SlideoutNavigation</Name>
     </ProjectReference>
   </ItemGroup>
 </Project>

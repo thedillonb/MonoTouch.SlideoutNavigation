@@ -24,7 +24,7 @@ using System.Linq;
 
 using MonoTouch.Foundation;
 using MonoTouch.UIKit;
-using MonoTouch.Slideout;
+using MonoTouch.SlideoutNavigation;
 using MonoTouch.Dialog;
 
 namespace Slideout.Sample
@@ -37,7 +37,7 @@ namespace Slideout.Sample
     {
         // class-level declarations
         UIWindow window;
-        SlideoutViewController menu;
+        SlideoutNavigationController menu;
         UITableViewController ctrl;
 
         // This is the main entry point of the application.
@@ -59,7 +59,7 @@ namespace Slideout.Sample
         {
             window = new UIWindow (UIScreen.MainScreen.Bounds);
             ctrl = new UITableViewController() { Title = "Hello" };
-            menu = new SlideoutViewController();
+            menu = new SlideoutNavigationController();
             menu.TopView = ctrl;
             menu.MenuView = new DummyController();
 

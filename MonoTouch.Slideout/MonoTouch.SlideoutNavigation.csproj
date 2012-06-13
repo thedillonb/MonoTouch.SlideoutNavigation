@@ -36,7 +36,7 @@
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
-    <Compile Include="SlideoutViewController.cs" />
+    <Compile Include="SlideoutNavigationController.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Images\" />
