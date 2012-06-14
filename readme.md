@@ -14,9 +14,7 @@ To close, you can click the former view or make a left pan motion.
 In Action
 ---------
 
-![Home Screen](http://www.dillonbuchanan.com/wp-content/uploads/2012/06/img1.png "Home Screen")
-
-![Open](http://www.dillonbuchanan.com/wp-content/uploads/2012/06/img2.png "Open")
+![Home Screen](http://www.dillonbuchanan.com/wp-content/uploads/2012/06/img1.png "Home Screen") ![Open](http://www.dillonbuchanan.com/wp-content/uploads/2012/06/img2.png "Open")
 
 
 Usage
