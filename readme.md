@@ -14,9 +14,9 @@ To close, you can click the former view or make a left pan motion.
 In Action
 ---------
 
-![Image 1](/Screenshots/img1.png "Image1")
+![Image 1](Screenshots/img1.png "Image1")
 
-![Image 2](/Screenshots/img2.png "Image2")
+![Image 2](Screenshots/img2.png "Image2")
 
 
 Usage
