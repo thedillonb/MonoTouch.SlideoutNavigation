@@ -26,6 +26,7 @@ using MonoTouch.Foundation;
 using MonoTouch.UIKit;
 using MonoTouch.SlideoutNavigation;
 using MonoTouch.Dialog;
+using Slideout.Views;
 
 namespace Slideout.Sample
 {
@@ -38,7 +39,6 @@ namespace Slideout.Sample
         // class-level declarations
         UIWindow window;
         SlideoutNavigationController menu;
-        UITableViewController ctrl;
 
         // This is the main entry point of the application.
         static void Main (string[] args)
@@ -58,14 +58,9 @@ namespace Slideout.Sample
         public override bool FinishedLaunching (UIApplication app, NSDictionary options)
         {
             window = new UIWindow (UIScreen.MainScreen.Bounds);
-            ctrl = new UITableViewController() { Title = "Hello" };
             menu = new SlideoutNavigationController();
-            menu.TopView = ctrl;
+            menu.TopView = new HomeViewController();
             menu.MenuView = new DummyController();
-
-            //Create some sort of menu button
-            //menu.CurrentView = nav;
-
 
             window.RootViewController = menu;
             window.MakeKeyAndVisible ();
@@ -86,9 +81,9 @@ namespace Slideout.Sample
             base.ViewDidLoad ();
 
             Root.Add(new Section() {
-                new StyledStringElement("Home", () => { NavigationController.PushViewController(new UITableViewController() { Title = "Home!" }, true); }),
-                new StyledStringElement("About", () => { NavigationController.PushViewController(new UITableViewController() { Title = "About!" }, true); }),
-                new StyledStringElement("Stuff", () => { NavigationController.PushViewController(new UITableViewController() { Title = "Stuff!" }, true); })
+                new StyledStringElement("Home", () => { NavigationController.PushViewController(new HomeViewController(), true); }),
+                new StyledStringElement("About", () => { NavigationController.PushViewController(new AboutViewController(), true); }),
+                new StyledStringElement("Stuff", () => { NavigationController.PushViewController(new StuffViewController(), true); })
             });
         }
     }

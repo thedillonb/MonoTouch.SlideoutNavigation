@@ -2,7 +2,7 @@
 //  MenuViewController.cs
 //  
 //  Author:
-//       dillonb <>
+//       dillonb <thedillonb@gmail.com>
 // 
 //  Copyright (c) 2012 dillonb
 // 
@@ -212,44 +212,40 @@ namespace MonoTouch.SlideoutNavigation
             }
             else if (!ignorePan && (_panGesture.State == UIGestureRecognizerState.Ended || _panGesture.State == UIGestureRecognizerState.Cancelled))
             {
-                var velocity = Math.Abs(_panGesture.VelocityInView(view).X);
-                if (velocity > 800.0f)
-                {
-                    if (Visible)
-                        Hide();
-                    else
-                        Show();
-                    return;
-                }
+                var velocity = _panGesture.VelocityInView(view).X;
 
                 if (Visible)
                 {
-                    if (view.Frame.X < _internalMenuView.View.Frame.Width / 2)
+                    if (velocity < -800.0f)
                     {
                         Hide();
-                        return;
+                    } 
+                    else if (view.Frame.X < _internalMenuView.View.Frame.Width / 2)
+                    {
+                        Hide();
                     }
                     else
                     {
                         UIView.Animate(SlideSpeed, 0, UIViewAnimationOptions.CurveEaseInOut, () => {
                             view.Frame = new System.Drawing.RectangleF(SlideWidth, 0, view.Frame.Width, view.Frame.Height); 
                         }, () => { });
-                        return;
                     }
                 }
                 else
                 {
-                    if (view.Frame.X > _internalMenuView.View.Frame.Width / 2)
+                    if (velocity > 800.0f)
                     {
                         Show();
-                        return;
+                    }
+                    else if (view.Frame.X > _internalMenuView.View.Frame.Width / 2)
+                    {
+                        Show();
                     }
                     else
                     {
                         UIView.Animate(SlideSpeed, 0, UIViewAnimationOptions.CurveEaseInOut, () => {
                             view.Frame = new System.Drawing.RectangleF(0, 0, view.Frame.Width, view.Frame.Height);
                         }, () => { });
-                        return;
                     }
                 }
             }
