@@ -153,7 +153,8 @@ namespace MonoTouch.SlideoutNavigation
             SlideWidth = 260f;
 
             _internalMenuView = new ProxyNavigationController() { ParentController = this };
-            _internalMenuView.SetNavigationBarHidden(true, false);
+            //_internalMenuView.SetNavigationBarHidden(true, false);
+            _internalMenuView.View.AutoresizingMask = UIViewAutoresizing.FlexibleHeight;
 
             _internalTopView = new UIViewController();
             _internalTopView.View.UserInteractionEnabled = true;
@@ -162,6 +163,7 @@ namespace MonoTouch.SlideoutNavigation
             _internalTopView.View.Layer.ShadowRadius = 4.0f;
             _internalTopView.View.Layer.ShadowOpacity = 0.5f;
             _internalTopView.View.Layer.ShadowColor = UIColor.Black.CGColor;
+
 
             _tapGesture = new UITapGestureRecognizer();
             _tapGesture.AddTarget(() => Hide());
@@ -272,6 +274,20 @@ namespace MonoTouch.SlideoutNavigation
             this.AddChildViewController(_internalTopView);
             this.View.AddSubview(_internalTopView.View);
         }
+
+		public override void ViewWillAppear (bool animated)
+		{
+			base.ViewWillAppear (animated);
+			if (NavigationController != null)
+				NavigationController.SetNavigationBarHidden(true, true);
+		}
+
+		public override void ViewWillDisappear (bool animated)
+		{
+			base.ViewWillDisappear (animated);
+			if (NavigationController != null)
+				NavigationController.SetNavigationBarHidden(false, true);
+		}
 
         /// <summary>
         /// Show this instance.
