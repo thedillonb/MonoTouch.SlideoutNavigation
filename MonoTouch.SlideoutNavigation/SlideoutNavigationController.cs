@@ -153,15 +153,11 @@ namespace MonoTouch.SlideoutNavigation
             SlideWidth = 260f;
 
             _internalMenuView = new ProxyNavigationController() { ParentController = this };
-            _internalMenuView.SetNavigationBarHidden(true, false);
+            //_internalMenuView.SetNavigationBarHidden(true, false);
 
             _internalTopView = new UIViewController();
             _internalTopView.View.UserInteractionEnabled = true;
             _internalTopView.View.Layer.MasksToBounds = false;
-            _internalTopView.View.Layer.ShadowOffset = new System.Drawing.SizeF(-5, 0);
-            _internalTopView.View.Layer.ShadowRadius = 4.0f;
-            _internalTopView.View.Layer.ShadowOpacity = 0.5f;
-            _internalTopView.View.Layer.ShadowColor = UIColor.Black.CGColor;
 
             _tapGesture = new UITapGestureRecognizer();
             _tapGesture.AddTarget(() => Hide());
@@ -186,6 +182,9 @@ namespace MonoTouch.SlideoutNavigation
         /// </param>
         private void Pan(UIView view)
         {
+            if (_internalTopNavigation.NavigationBarHidden)
+                return;
+
             if (_panGesture.State == UIGestureRecognizerState.Began)
             {
                 panOriginX = view.Frame.X;
@@ -283,6 +282,11 @@ namespace MonoTouch.SlideoutNavigation
                 return;
             Visible = true;
 
+            _internalTopView.View.Layer.ShadowOffset = new System.Drawing.SizeF(-5, 0);
+            _internalTopView.View.Layer.ShadowRadius = 4.0f;
+            _internalTopView.View.Layer.ShadowOpacity = 0.5f;
+            _internalTopView.View.Layer.ShadowColor = UIColor.Black.CGColor;
+
             var view = _internalTopView.View;
             UIView.Animate(SlideSpeed, 0, UIViewAnimationOptions.CurveEaseInOut, () => {
                 view.Frame = new System.Drawing.RectangleF(SlideWidth, 0, view.Frame.Width, view.Frame.Height);
@@ -332,6 +336,8 @@ namespace MonoTouch.SlideoutNavigation
                 return;
             Visible = false;
 
+
+
             var view = _internalTopView.View;
             UIView.Animate(SlideSpeed, 0, UIViewAnimationOptions.CurveEaseInOut, () => {
                 view.Frame = new System.Drawing.RectangleF(0, 0, view.Frame.Width, view.Frame.Height);
@@ -339,6 +345,12 @@ namespace MonoTouch.SlideoutNavigation
                 if (view.Subviews.Length > 0)
                     view.Subviews[0].UserInteractionEnabled = true;
                 view.RemoveGestureRecognizer(_tapGesture);
+
+                _internalTopView.View.Layer.ShadowOffset = new SizeF(0, 0);
+                _internalTopView.View.Layer.ShadowRadius = 0.0f;
+                _internalTopView.View.Layer.ShadowOpacity = 0.0f;
+                _internalTopView.View.Layer.ShadowColor = UIColor.Clear.CGColor;
+
             });
         }
 
