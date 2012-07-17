@@ -154,6 +154,7 @@ namespace MonoTouch.SlideoutNavigation
 
             _internalMenuView = new ProxyNavigationController() { ParentController = this };
             //_internalMenuView.SetNavigationBarHidden(true, false);
+            _internalMenuView.View.AutoresizingMask = UIViewAutoresizing.FlexibleHeight;
 
             _internalTopView = new UIViewController();
             _internalTopView.View.UserInteractionEnabled = true;
@@ -271,6 +272,20 @@ namespace MonoTouch.SlideoutNavigation
             this.AddChildViewController(_internalTopView);
             this.View.AddSubview(_internalTopView.View);
         }
+
+		public override void ViewWillAppear (bool animated)
+		{
+			base.ViewWillAppear (animated);
+			if (NavigationController != null)
+				NavigationController.SetNavigationBarHidden(true, true);
+		}
+
+		public override void ViewWillDisappear (bool animated)
+		{
+			base.ViewWillDisappear (animated);
+			if (NavigationController != null)
+				NavigationController.SetNavigationBarHidden(false, true);
+		}
 
         /// <summary>
         /// Show this instance.
