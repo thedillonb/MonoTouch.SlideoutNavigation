@@ -383,6 +383,26 @@ namespace MonoTouch.SlideoutNavigation
             return true;
         }
 
+        /// <summary>
+        /// Sets the menu navigation background image.
+        /// </summary>
+        /// <param name='image'>Image to be displayed as the background</param>
+        /// <param name='metrics'>Metrics.</param>
+        public void SetMenuNavigationBackgroundImage(UIImage image, UIBarMetrics metrics)
+        {
+            _internalMenuView.NavigationBar.SetBackgroundImage(image, metrics);
+        }
+
+        /// <summary>
+        /// Sets the top view navigation background image.
+        /// </summary>
+        /// <param name='image'>Image to be displayed as the background</param>
+        /// <param name='metrics'>Metrics.</param>
+        public void SetTopNavigationBackgroundImage(UIImage image, UIBarMetrics metrics)
+        {
+            _internalTopNavigation.NavigationBar.SetBackgroundImage(image, metrics);
+        }
+
     }
 }
 
