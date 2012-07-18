@@ -39,6 +39,7 @@ namespace MonoTouch.SlideoutNavigation
         private UINavigationController _internalTopNavigation;
         private UIViewController _externalContentView;
         private UIViewController _externalMenuView;
+        private bool _shadowShown;
 
         ///<summary>
         /// A proxy class for the navigation controller.
@@ -87,24 +88,24 @@ namespace MonoTouch.SlideoutNavigation
 
         ///<summary>
         /// A custom UIGestureRecognizerDelegate activated only when the controller 
-		/// is visible or touch is within the 44.0f boundary.
-		/// 
-		/// Special thanks to Gerry High for this snippet!
+        /// is visible or touch is within the 44.0f boundary.
+        /// 
+        /// Special thanks to Gerry High for this snippet!
         ///</summary>
-		private class SlideoutPanDelegate : UIGestureRecognizerDelegate
-		{
-			private SlideoutNavigationController _controller;
+        private class SlideoutPanDelegate : UIGestureRecognizerDelegate
+        {
+            private SlideoutNavigationController _controller;
 
-			public SlideoutPanDelegate(SlideoutNavigationController controller)
-			{
-				_controller = controller;
-			}
+            public SlideoutPanDelegate(SlideoutNavigationController controller)
+            {
+                _controller = controller;
+            }
 
-			public override bool ShouldReceiveTouch (UIGestureRecognizer recognizer, UITouch touch)
-			{
-				return (this._controller.Visible || (touch.LocationInView(this._controller._internalTopView.View).Y <= 44.0f));
-			}
-		}
+            public override bool ShouldReceiveTouch (UIGestureRecognizer recognizer, UITouch touch)
+            {
+                return (this._controller.Visible || (touch.LocationInView(this._controller._internalTopView.View).Y <= 44.0f));
+            }
+        }
 
         /// <summary>
         /// Gets or sets the current view.
@@ -231,6 +232,9 @@ namespace MonoTouch.SlideoutNavigation
                     t = 0;
 
                 view.Frame = new RectangleF(panOriginX + t, view.Frame.Y, view.Frame.Width, view.Frame.Height);
+
+                //Make sure the shadow is shown while we move the frame around!
+                ShowShadow();
             }
             else if (!ignorePan && (_panGesture.State == UIGestureRecognizerState.Ended || _panGesture.State == UIGestureRecognizerState.Cancelled))
             {
@@ -310,6 +314,38 @@ namespace MonoTouch.SlideoutNavigation
 		}
 
         /// <summary>
+        /// Shows the shadow of the top view!
+        /// </summary>
+        private void ShowShadow()
+        {
+            //Dont need to call this twice if its already shown
+            if (_shadowShown)
+            	return;
+
+            _internalTopView.View.Layer.ShadowOffset = new System.Drawing.SizeF(-5, 0);
+            _internalTopView.View.Layer.ShadowRadius = 4.0f;
+            _internalTopView.View.Layer.ShadowOpacity = 0.5f;
+            _internalTopView.View.Layer.ShadowColor = UIColor.Black.CGColor;
+            _shadowShown = true;
+        }
+
+        /// <summary>
+        /// Hides the shadow of the top view
+        /// </summary>
+        private void HideShadow ()
+        {
+            //Dont need to call this twice if its already hidden
+            if (!_shadowShown)
+            	return;
+
+            _internalTopView.View.Layer.ShadowOffset = new SizeF(0, 0);
+            _internalTopView.View.Layer.ShadowRadius = 0.0f;
+            _internalTopView.View.Layer.ShadowOpacity = 0.0f;
+            _internalTopView.View.Layer.ShadowColor = UIColor.Clear.CGColor;
+            _shadowShown = false;
+        }
+
+        /// <summary>
         /// Show this instance.
         /// </summary>
         public void Show()
@@ -319,10 +355,8 @@ namespace MonoTouch.SlideoutNavigation
                 return;
             Visible = true;
 
-            _internalTopView.View.Layer.ShadowOffset = new System.Drawing.SizeF(-5, 0);
-            _internalTopView.View.Layer.ShadowRadius = 4.0f;
-            _internalTopView.View.Layer.ShadowOpacity = 0.5f;
-            _internalTopView.View.Layer.ShadowColor = UIColor.Black.CGColor;
+            //Show some shadow!
+            ShowShadow();
 
             var view = _internalTopView.View;
             UIView.Animate(SlideSpeed, 0, UIViewAnimationOptions.CurveEaseInOut, () => {
@@ -383,11 +417,8 @@ namespace MonoTouch.SlideoutNavigation
                     view.Subviews[0].UserInteractionEnabled = true;
                 view.RemoveGestureRecognizer(_tapGesture);
 
-                _internalTopView.View.Layer.ShadowOffset = new SizeF(0, 0);
-                _internalTopView.View.Layer.ShadowRadius = 0.0f;
-                _internalTopView.View.Layer.ShadowOpacity = 0.0f;
-                _internalTopView.View.Layer.ShadowColor = UIColor.Clear.CGColor;
-
+                //Hide the shadow when not needed to increase performance of the top layer!
+                HideShadow();
             });
         }
 
