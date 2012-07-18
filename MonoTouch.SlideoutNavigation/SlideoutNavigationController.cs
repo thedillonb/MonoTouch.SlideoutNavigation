@@ -85,6 +85,27 @@ namespace MonoTouch.SlideoutNavigation
             }
         }
 
+        ///<summary>
+        /// A custom UIGestureRecognizerDelegate activated only when the controller 
+		/// is visible or touch is within the 44.0f boundary.
+		/// 
+		/// Special thanks to Gerry High for this snippet!
+        ///</summary>
+		private class SlideoutPanDelegate : UIGestureRecognizerDelegate
+		{
+			private SlideoutNavigationController _controller;
+
+			public SlideoutPanDelegate(SlideoutNavigationController controller)
+			{
+				_controller = controller;
+			}
+
+			public override bool ShouldReceiveTouch (UIGestureRecognizer recognizer, UITouch touch)
+			{
+				return (this._controller.Visible || (touch.LocationInView(this._controller._internalTopView.View).Y <= 44.0f));
+			}
+		}
+
         /// <summary>
         /// Gets or sets the current view.
         /// </summary>
@@ -165,6 +186,7 @@ namespace MonoTouch.SlideoutNavigation
             _tapGesture.NumberOfTapsRequired = 1;
 
             _panGesture = new UIPanGestureRecognizer();
+			_panGesture.Delegate = new SlideoutPanDelegate(this);
             _panGesture.MaximumNumberOfTouches = 1;
             _panGesture.MinimumNumberOfTouches = 1;
             _panGesture.AddTarget(() => Pan(_internalTopView.View));
