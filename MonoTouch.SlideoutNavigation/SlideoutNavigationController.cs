@@ -143,6 +143,14 @@ namespace MonoTouch.SlideoutNavigation
         }
 
         /// <summary>
+        /// Gets or sets a value indicating whether there should be shadowing effects on the top view
+        /// </summary>
+        /// <value>
+        /// <c>true</c> if layer shadowing; otherwise, <c>false</c>.
+        /// </value>
+        public bool LayerShadowing { get; set; }
+
+        /// <summary>
         /// Gets or sets the slide speed.
         /// </summary>
         /// <value>
@@ -173,6 +181,7 @@ namespace MonoTouch.SlideoutNavigation
         {
             SlideSpeed = 0.2f;
             SlideWidth = 260f;
+            LayerShadowing = true;
 
             _internalMenuView = new ProxyNavigationController() { ParentController = this };
             //_internalMenuView.SetNavigationBarHidden(true, false);
@@ -319,7 +328,7 @@ namespace MonoTouch.SlideoutNavigation
         private void ShowShadow()
         {
             //Dont need to call this twice if its already shown
-            if (_shadowShown)
+            if (!LayerShadowing || _shadowShown)
             	return;
 
             _internalTopView.View.Layer.ShadowOffset = new System.Drawing.SizeF(-5, 0);
@@ -337,7 +346,7 @@ namespace MonoTouch.SlideoutNavigation
         private void HideShadow ()
         {
             //Dont need to call this twice if its already hidden
-            if (!_shadowShown)
+            if (!LayerShadowing || !_shadowShown)
             	return;
 
             _internalTopView.View.Layer.ShadowOffset = new SizeF(0, 0);
