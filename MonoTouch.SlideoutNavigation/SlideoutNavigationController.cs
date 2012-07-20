@@ -323,9 +323,11 @@ namespace MonoTouch.SlideoutNavigation
             	return;
 
             _internalTopView.View.Layer.ShadowOffset = new System.Drawing.SizeF(-5, 0);
+            _internalTopView.View.Layer.ShadowPath = UIBezierPath.FromRect(_internalTopView.View.Bounds).CGPath;
             _internalTopView.View.Layer.ShadowRadius = 4.0f;
             _internalTopView.View.Layer.ShadowOpacity = 0.5f;
             _internalTopView.View.Layer.ShadowColor = UIColor.Black.CGColor;
+
             _shadowShown = true;
         }
 
