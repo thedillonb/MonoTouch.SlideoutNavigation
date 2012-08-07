@@ -237,8 +237,12 @@ namespace MonoTouch.SlideoutNavigation
 
                 if (t > 0 && Visible)
                     t = 0;
+                else if (t < -_internalMenuView.View.Bounds.Width && Visible)
+                    t = -_internalMenuView.View.Bounds.Width;
                 else if (t < 0 && !Visible)
                     t = 0;
+                else if (t > _internalMenuView.View.Bounds.Width && !Visible)
+                    t = _internalMenuView.View.Bounds.Width;
 
                 view.Frame = new RectangleF(panOriginX + t, view.Frame.Y, view.Frame.Width, view.Frame.Height);
 
