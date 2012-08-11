@@ -98,6 +98,10 @@
     <Compile Include="Views\StuffViewController.designer.cs">
       <DependentUpon>StuffViewController.cs</DependentUpon>
     </Compile>
+    <Compile Include="Views\FullscreenViewController.cs" />
+    <Compile Include="Views\FullscreenViewController.designer.cs">
+      <DependentUpon>FullscreenViewController.cs</DependentUpon>
+    </Compile>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
@@ -113,5 +117,6 @@
     <InterfaceDefinition Include="Views\HomeViewController.xib" />
     <InterfaceDefinition Include="Views\AboutViewController.xib" />
     <InterfaceDefinition Include="Views\StuffViewController.xib" />
+    <InterfaceDefinition Include="Views\FullscreenViewController.xib" />
   </ItemGroup>
 </Project>

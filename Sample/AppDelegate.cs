@@ -38,7 +38,7 @@ namespace Slideout.Sample
     {
         // class-level declarations
         UIWindow window;
-        SlideoutNavigationController menu;
+        public SlideoutNavigationController Menu { get; private set; }
 
         // This is the main entry point of the application.
         static void Main (string[] args)
@@ -58,11 +58,11 @@ namespace Slideout.Sample
         public override bool FinishedLaunching (UIApplication app, NSDictionary options)
         {
             window = new UIWindow (UIScreen.MainScreen.Bounds);
-            menu = new SlideoutNavigationController();
-            menu.TopView = new HomeViewController();
-            menu.MenuView = new DummyController();
+            Menu = new SlideoutNavigationController();
+            Menu.TopView = new HomeViewController();
+            Menu.MenuView = new DummyController();
 
-            window.RootViewController = menu;
+            window.RootViewController = Menu;
             window.MakeKeyAndVisible ();
 
             return true;
@@ -83,7 +83,8 @@ namespace Slideout.Sample
             Root.Add(new Section() {
                 new StyledStringElement("Home", () => { NavigationController.PushViewController(new HomeViewController(), true); }),
                 new StyledStringElement("About", () => { NavigationController.PushViewController(new AboutViewController(), true); }),
-                new StyledStringElement("Stuff", () => { NavigationController.PushViewController(new StuffViewController(), true); })
+                new StyledStringElement("Stuff", () => { NavigationController.PushViewController(new StuffViewController(), true); }),
+                new StyledStringElement("Full Screen", () => { NavigationController.PushViewController(new FullscreenViewController(), true); })
             });
         }
     }

@@ -215,9 +215,6 @@ namespace MonoTouch.SlideoutNavigation
         /// </param>
         private void Pan(UIView view)
         {
-            if (_internalTopNavigation.NavigationBarHidden)
-                return;
-
             if (_panGesture.State == UIGestureRecognizerState.Began)
             {
                 panOriginX = view.Frame.X;
@@ -226,7 +223,7 @@ namespace MonoTouch.SlideoutNavigation
                 if (!Visible)
                 {
                     var touch = _panGesture.LocationOfTouch(0, view);
-                    if (touch.Y > 44.0f)
+                    if (touch.Y > 44.0f || _internalTopNavigation.NavigationBarHidden)
                         ignorePan = true;
                 }
 
