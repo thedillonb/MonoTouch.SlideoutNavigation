@@ -4,6 +4,7 @@ using System.Drawing;
 
 using MonoTouch.Foundation;
 using MonoTouch.UIKit;
+using MonoTouch.CoreGraphics;
 
 namespace Slideout.Sample
 {
@@ -46,8 +47,21 @@ namespace Slideout.Sample
                 UIView.Animate(0.3, 0, UIViewAnimationOptions.CurveLinear, () => {
                     var del = UIApplication.SharedApplication.Delegate as AppDelegate;
                     var frame = del.Menu.View.Frame;
-                    frame.Y -= 20f;
-                    frame.Height += 20f;
+
+                    //I have absolutely no clue why this is needed. Apparently when the orientation changes so does the
+                    //coordinate system. When in landscape, we just adjust the width of the frame?!?! That doesnt make any sense
+                    //to me but what ever. It seems to behave as expected now...
+                    if (UIApplication.SharedApplication.StatusBarOrientation == UIInterfaceOrientation.LandscapeLeft ||
+                        UIApplication.SharedApplication.StatusBarOrientation == UIInterfaceOrientation.LandscapeRight)
+                    {
+                        frame.Width += 20f;
+                    }
+                    else
+                    {
+                        frame.Y -= 20f;
+                        frame.Height += 20f;
+                    }
+
                     del.Menu.View.Frame = frame;
                 }, () => { });
 
@@ -70,8 +84,21 @@ namespace Slideout.Sample
                 UIView.Animate(0.3, 0, UIViewAnimationOptions.CurveLinear, () => {
                     var del = UIApplication.SharedApplication.Delegate as AppDelegate;
                     var frame = del.Menu.View.Frame;
-                    frame.Y += 20f;
-                    frame.Height -= 20f;
+
+                    //I have absolutely no clue why this is needed. Apparently when the orientation changes so does the
+                    //coordinate system. When in landscape, we just adjust the width of the frame?!?! That doesnt make any sense
+                    //to me but what ever. It seems to behave as expected now...
+                    if (UIApplication.SharedApplication.StatusBarOrientation == UIInterfaceOrientation.LandscapeLeft||
+                        UIApplication.SharedApplication.StatusBarOrientation == UIInterfaceOrientation.LandscapeRight)
+                    {
+                        frame.Width -= 20f;
+                    }
+                    else
+                    {
+                        frame.Y += 20f;
+                        frame.Height -= 20f;
+                    }
+
                     del.Menu.View.Frame = frame;
                 }, () => { });
             });
@@ -88,7 +115,7 @@ namespace Slideout.Sample
 			
             ReleaseDesignerOutlets ();
         }
-		
+
         public override bool ShouldAutorotateToInterfaceOrientation (UIInterfaceOrientation toInterfaceOrientation)
         {
             // Return true for supported orientations
