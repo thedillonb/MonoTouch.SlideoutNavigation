@@ -41,6 +41,8 @@ namespace MonoTouch.SlideoutNavigation
         private UIViewController _externalMenuView;
         private bool _shadowShown;
 
+        public float SlideHeight { get; set; }
+
         ///<summary>
         /// A proxy class for the navigation controller.
         /// This allows the menu view to make requests to the navigation controller
@@ -103,7 +105,7 @@ namespace MonoTouch.SlideoutNavigation
 
             public override bool ShouldReceiveTouch (UIGestureRecognizer recognizer, UITouch touch)
             {
-                return (this._controller.Visible || (touch.LocationInView(this._controller._internalTopView.View).Y <= 44.0f));
+                return (this._controller.Visible || (touch.LocationInView(this._controller._internalTopView.View).Y <= this._controller.SlideHeight));
             }
         }
 
@@ -181,6 +183,7 @@ namespace MonoTouch.SlideoutNavigation
         {
             SlideSpeed = 0.2f;
             SlideWidth = 260f;
+            SlideHeight = 44f;
             LayerShadowing = true;
 
             _internalMenuView = new ProxyNavigationController() { ParentController = this };
@@ -223,7 +226,7 @@ namespace MonoTouch.SlideoutNavigation
                 if (!Visible)
                 {
                     var touch = _panGesture.LocationOfTouch(0, view);
-                    if (touch.Y > 44.0f || _internalTopNavigation.NavigationBarHidden)
+                    if (touch.Y > SlideHeight || _internalTopNavigation.NavigationBarHidden)
                         ignorePan = true;
                 }
 
