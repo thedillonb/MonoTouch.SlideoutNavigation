@@ -403,7 +403,7 @@ namespace MonoTouch.SlideoutNavigation
             _internalTopView.AddChildViewController(_internalTopNavigation);
             _internalTopView.View.AddSubview(_internalTopNavigation.View);
 
-            view.NavigationItem.LeftBarButtonItem = new UIBarButtonItem(UIImage.FromBundle("/Images/three_lines.png"), UIBarButtonItemStyle.Plain, (s,e) => {
+            view.NavigationItem.LeftBarButtonItem = new UIBarButtonItem(UIImage.FromFile("Images/three_lines.png"), UIBarButtonItemStyle.Plain, (s,e) => {
                 Show();
             });
 
