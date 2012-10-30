@@ -1,5 +1,6 @@
 using System.Drawing;
 using MonoTouch.UIKit;
+using MonoTouch.Foundation;
 
 namespace MonoTouch.SlideoutNavigation
 {
@@ -19,6 +20,7 @@ namespace MonoTouch.SlideoutNavigation
         private UINavigationController _internalTopNavigation;
         private float _panOriginX;
         private bool _shadowShown;
+        private bool _menuEnabled = true;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SlideoutNavigationController"/> class.
@@ -70,6 +72,33 @@ namespace MonoTouch.SlideoutNavigation
                 if (_externalContentView == value)
                     return;
                 SelectView(value);
+            }
+        }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether this
+        /// <see cref="MonoTouch.SlideoutNavigation.SlideoutNavigationController"/> menu enabled.
+        /// If this is true then you can reach the menu. If false then all hooks to get to the menu view will be disabled.
+        /// This is only necessary when you don't want the user to get to the menu.
+        /// </summary>
+        public bool MenuEnabled
+        {
+            get { return _menuEnabled; }
+            set
+            {
+                if (value == _menuEnabled)
+                    return;
+
+                if (!value)
+                    Hide();
+
+                if (_internalTopNavigation != null && _internalTopNavigation.ViewControllers.Length > 0)
+                {
+                    var view = _internalTopNavigation.ViewControllers[0];
+                    view.NavigationItem.LeftBarButtonItem = value ? CreateMenuButton() : null;
+                }
+
+                _menuEnabled = value;
             }
         }
 
@@ -131,6 +160,9 @@ namespace MonoTouch.SlideoutNavigation
         /// </param>
         private void Pan(UIView view)
         {
+            if (!MenuEnabled)
+                return;
+
             if (_panGesture.State == UIGestureRecognizerState.Began)
             {
                 _panOriginX = view.Frame.X;
@@ -301,6 +333,14 @@ namespace MonoTouch.SlideoutNavigation
         }
 
         /// <summary>
+        /// Creates the menu button.
+        /// </summary>
+        protected virtual UIBarButtonItem CreateMenuButton()
+        {
+            return new UIBarButtonItem(UIImage.FromFile("Images/three_lines.png"), UIBarButtonItemStyle.Plain, (s, e) => Show());
+        }
+
+        /// <summary>
         /// Selects the view.
         /// </summary>
         /// <param name='view'>
@@ -327,8 +367,8 @@ namespace MonoTouch.SlideoutNavigation
             _internalTopView.AddChildViewController(_internalTopNavigation);
             _internalTopView.View.AddSubview(_internalTopNavigation.View);
 
-            view.NavigationItem.LeftBarButtonItem = new UIBarButtonItem(UIImage.FromFile("Images/three_lines.png"),
-                                                                        UIBarButtonItemStyle.Plain, (s, e) => Show());
+            if (MenuEnabled)
+                view.NavigationItem.LeftBarButtonItem = CreateMenuButton();
 
             _externalContentView = view;
 
@@ -338,45 +378,31 @@ namespace MonoTouch.SlideoutNavigation
         /// <summary>
         /// Hide this instance.
         /// </summary>
-        public void Hide()
+        public void Hide(bool animate = true)
         {
             //Don't hide if its not visible.
             if (!Visible)
                 return;
             Visible = false;
 
-
             UIView view = _internalTopView.View;
-            UIView.Animate(SlideSpeed, 0, UIViewAnimationOptions.CurveEaseInOut,
-                           () => { view.Frame = new RectangleF(0, 0, view.Frame.Width, view.Frame.Height); }, () =>
-                                                                                                                  {
-                                                                                                                      if
-                                                                                                                          (
-                                                                                                                          view
-                                                                                                                              .
-                                                                                                                              Subviews
-                                                                                                                              .
-                                                                                                                              Length >
-                                                                                                                          0)
-                                                                                                                          view
-                                                                                                                              .
-                                                                                                                              Subviews
-                                                                                                                              [
-                                                                                                                                  0
-                                                                                                                              ]
-                                                                                                                              .
-                                                                                                                              UserInteractionEnabled
-                                                                                                                              =
-                                                                                                                              true;
-                                                                                                                      view
-                                                                                                                          .
-                                                                                                                          RemoveGestureRecognizer
-                                                                                                                          (_tapGesture);
 
-                                                                                                                      //Hide the shadow when not needed to increase performance of the top layer!
-                                                                                                                      HideShadow
-                                                                                                                          ();
-                                                                                                                  });
+            NSAction animation = () => { view.Frame = new RectangleF(0, 0, view.Frame.Width, view.Frame.Height); };
+            NSAction finished = () => {
+                if (view.Subviews.Length > 0)
+                view.Subviews[0].UserInteractionEnabled = true;
+                view.RemoveGestureRecognizer(_tapGesture);
+                //Hide the shadow when not needed to increase performance of the top layer!
+                HideShadow();
+            };
+
+            if (animate)
+                UIView.Animate(SlideSpeed, 0, UIViewAnimationOptions.CurveEaseInOut, animation, finished);
+            else
+            {
+                animation();
+                finished();
+            }
         }
 
         /// <summary>
@@ -482,7 +508,7 @@ namespace MonoTouch.SlideoutNavigation
             public override bool ShouldReceiveTouch(UIGestureRecognizer recognizer, UITouch touch)
             {
                 return (_controller.Visible ||
-                        (touch.LocationInView(_controller._internalTopView.View).Y <= _controller.SlideHeight));
+                        (touch.LocationInView(_controller._internalTopView.View).Y <= _controller.SlideHeight)) && _controller.MenuEnabled;
             }
         }
 
