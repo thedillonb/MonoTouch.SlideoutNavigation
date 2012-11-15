@@ -337,7 +337,7 @@ namespace MonoTouch.SlideoutNavigation
         /// </summary>
         protected virtual UIBarButtonItem CreateMenuButton()
         {
-            return new UIBarButtonItem(UIImage.FromFile("Images/three_lines.png"), UIBarButtonItemStyle.Plain, (s, e) => Show());
+            return new UIBarButtonItem("Menu", UIBarButtonItemStyle.Plain, (s, e) => Show());
         }
 
         /// <summary>

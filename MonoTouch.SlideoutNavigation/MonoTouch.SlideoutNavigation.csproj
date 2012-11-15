@@ -39,10 +39,4 @@
   <ItemGroup>
     <Compile Include="SlideoutNavigationController.cs" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Images\" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="Images\three_lines.png" />
-  </ItemGroup>
 </Project>
