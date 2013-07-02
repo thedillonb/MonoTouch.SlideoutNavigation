@@ -22,6 +22,18 @@ namespace MonoTouch.SlideoutNavigation
         private bool _shadowShown;
         private bool _menuEnabled = true;
 
+        public UIColor BackgroundColor
+        {
+            get
+            {
+                return _internalTopView.View.BackgroundColor;
+            }
+            set
+            {
+                _internalTopView.View.BackgroundColor = value;
+            }
+        }
+
         /// <summary>
         /// Initializes a new instance of the <see cref="SlideoutNavigationController"/> class.
         /// </summary>
