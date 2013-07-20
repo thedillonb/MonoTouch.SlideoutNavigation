@@ -28,7 +28,7 @@ namespace Slideout.Sample
 
             this.BackButton.TouchUpInside += (sender, e) => {
                 var del = UIApplication.SharedApplication.Delegate as AppDelegate;
-                del.Menu.Show();
+                del.Menu.ShowMenuLeft();
             };
         }
 
