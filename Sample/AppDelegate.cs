@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-
 using MonoTouch.Foundation;
 using MonoTouch.UIKit;
 using MonoTouch.SlideoutNavigation;
@@ -18,8 +17,8 @@ namespace Slideout.Sample
     {
         // class-level declarations
         UIWindow window;
-        public SlideoutNavigationController Menu { get; private set; }
 
+        public SlideoutNavigationController Menu { get; private set; }
         // This is the main entry point of the application.
         static void Main (string[] args)
         {
@@ -27,7 +26,6 @@ namespace Slideout.Sample
             // you can specify it here.
             UIApplication.Main (args, null, "AppDelegate");
         }
-
         //
         // This method is invoked when the application has loaded and is ready to run. In this 
         // method you should instantiate the window, load the UI into it and then make the window
@@ -38,9 +36,10 @@ namespace Slideout.Sample
         public override bool FinishedLaunching (UIApplication app, NSDictionary options)
         {
             window = new UIWindow (UIScreen.MainScreen.Bounds);
-            Menu = new SlideoutNavigationController();
-            Menu.TopView = new HomeViewController();
-            Menu.MenuView = new DummyController();
+            Menu = new SlideoutNavigationController ();
+            Menu.TopView = new HomeViewController ();
+            Menu.MenuViewLeft = new DummyControllerLeft ();
+            Menu.MenuViewRight = new DummyControllerRight ();
 
             window.RootViewController = Menu;
             window.MakeKeyAndVisible ();
@@ -49,9 +48,9 @@ namespace Slideout.Sample
         }
     }
 
-    public class DummyController : DialogViewController
+    public class DummyControllerLeft : DialogViewController
     {
-        public DummyController() 
+        public DummyControllerLeft () 
             : base(UITableViewStyle.Plain,new RootElement(""))
         {
         }
@@ -60,11 +59,36 @@ namespace Slideout.Sample
         {
             base.ViewDidLoad ();
 
-            Root.Add(new Section() {
+            Root.Add (new Section () {
                 new StyledStringElement("Home", () => { NavigationController.PushViewController(new HomeViewController(), true); }),
                 new StyledStringElement("About", () => { NavigationController.PushViewController(new AboutViewController(), true); }),
                 new StyledStringElement("Stuff", () => { NavigationController.PushViewController(new StuffViewController(), true); }),
                 new StyledStringElement("Full Screen", () => { NavigationController.PushViewController(new FullscreenViewController(), true); })
+            });
+        }
+    }
+
+    public class DummyControllerRight : DialogViewController
+    {
+        public DummyControllerRight ()
+            : base(UITableViewStyle.Plain,new RootElement(""))
+        {
+        }
+
+        public override void ViewDidLoad ()
+        {
+            base.ViewDidLoad ();
+
+            var del = UIApplication.SharedApplication.Delegate as AppDelegate;
+
+            BooleanElement leftMenuEnabled = new BooleanElement ("Left menu enabled", del.Menu.LeftMenuEnabled);
+            leftMenuEnabled.ValueChanged += (sender, e) => {
+                del.Menu.LeftMenuEnabled = leftMenuEnabled.Value;
+            };
+
+            Root.Add (new Section () {
+                new StyledStringElement("Home", () => { NavigationController.PushViewController(new HomeViewController(), true); }),
+                leftMenuEnabled
             });
         }
     }
