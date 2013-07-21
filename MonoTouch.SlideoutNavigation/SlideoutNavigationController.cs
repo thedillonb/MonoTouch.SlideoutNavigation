@@ -216,6 +216,22 @@ namespace MonoTouch.SlideoutNavigation
         /// </summary>
         public SlideoutNavigationController ()
         {
+            InitView ();
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="SlideoutNavigationController"/> class.
+        /// </summary>
+        public SlideoutNavigationController (IntPtr handle)
+        {
+            InitView ();
+        }
+
+        /// <summary>
+        /// Inits the view and sets the default properties.
+        /// </summary>
+        private void InitView ()
+        {
             SlideSpeed = 0.2f;
             SlideWidth = 245f;
             SlideHeight = 44f;
@@ -443,9 +459,9 @@ namespace MonoTouch.SlideoutNavigation
 
             UIView view = _internalTopView.View;
             UIView.Animate (SlideSpeed, 0, UIViewAnimationOptions.CurveEaseInOut,
-                           () => {
+                            () => {
                 view.Frame = new RectangleF (SlideWidth, 0, view.Frame.Width, view.Frame.Height); },
-                           () =>
+                            () =>
             {
                 if (view.Subviews.Length > 0)
                     view.Subviews [0].UserInteractionEnabled = false;
