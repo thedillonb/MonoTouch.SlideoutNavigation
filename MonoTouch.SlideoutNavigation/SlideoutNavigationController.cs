@@ -214,16 +214,56 @@ namespace MonoTouch.SlideoutNavigation
         /// <summary>
         /// Initializes a new instance of the <see cref="SlideoutNavigationController"/> class.
         /// </summary>
-        public SlideoutNavigationController ()
+        public SlideoutNavigationController () : base()
         {
+            _internalMenuViewLeft = new ProxyNavigationController {
+                ParentController = this,
+                View = { AutoresizingMask = UIViewAutoresizing.FlexibleHeight }
+            };
+            _internalMenuViewRight = new ProxyNavigationController {
+                ParentController = this,
+                View = { AutoresizingMask = UIViewAutoresizing.FlexibleHeight }
+            };
+
+            _internalTopView = new UIViewController { View = { UserInteractionEnabled = true } };
+
+            _tapGesture = new UITapGestureRecognizer ();
+
+            _panGesture = new UIPanGestureRecognizer {
+                Delegate = new SlideoutPanDelegate(this),
+                MaximumNumberOfTouches = 1,
+                MinimumNumberOfTouches = 1
+            };
+
             InitView ();
         }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SlideoutNavigationController"/> class.
         /// </summary>
-        public SlideoutNavigationController (IntPtr handle)
+        public SlideoutNavigationController (IntPtr handle) : base(handle)
         {
+            // Prefer to have this code in an external function since this code needs to be implemented
+            // for every constructor, unfortunally readonly variables can only be set in the constructor.
+            _internalMenuViewLeft = new ProxyNavigationController {
+                ParentController = this,
+                View = { AutoresizingMask = UIViewAutoresizing.FlexibleHeight }
+            };
+            _internalMenuViewRight = new ProxyNavigationController {
+                ParentController = this,
+                View = { AutoresizingMask = UIViewAutoresizing.FlexibleHeight }
+            };
+
+            _internalTopView = new UIViewController { View = { UserInteractionEnabled = true } };
+
+            _tapGesture = new UITapGestureRecognizer ();
+
+            _panGesture = new UIPanGestureRecognizer {
+                Delegate = new SlideoutPanDelegate(this),
+                MaximumNumberOfTouches = 1,
+                MinimumNumberOfTouches = 1
+            };
+
             InitView ();
         }
 
@@ -237,30 +277,14 @@ namespace MonoTouch.SlideoutNavigation
             SlideHeight = 44f;
             LayerShadowing = false;
 
-            _internalMenuViewLeft = new ProxyNavigationController {
-                ParentController = this,
-                View = { AutoresizingMask = UIViewAutoresizing.FlexibleHeight }
-            };
-            _internalMenuViewRight = new ProxyNavigationController {
-                ParentController = this,
-                View = { AutoresizingMask = UIViewAutoresizing.FlexibleHeight }
-            };
-
             _internalMenuViewLeft.SetNavigationBarHidden (DisplayNavigationBarOnLeftMenu, false);
             _internalMenuViewRight.SetNavigationBarHidden (DisplayNavigationBarOnRightMenu, false);
 
-            _internalTopView = new UIViewController { View = { UserInteractionEnabled = true } };
             _internalTopView.View.Layer.MasksToBounds = false;
 
-            _tapGesture = new UITapGestureRecognizer ();
             _tapGesture.AddTarget (() => Hide ());
             _tapGesture.NumberOfTapsRequired = 1;
 
-            _panGesture = new UIPanGestureRecognizer {
-                Delegate = new SlideoutPanDelegate(this),
-                MaximumNumberOfTouches = 1,
-                MinimumNumberOfTouches = 1
-            };
             _panGesture.AddTarget (() => Pan (_internalTopView.View));
             _internalTopView.View.AddGestureRecognizer (_panGesture);
         }
@@ -351,8 +375,8 @@ namespace MonoTouch.SlideoutNavigation
             base.ViewDidLoad ();
 
             _internalTopView.View.Frame = new RectangleF (0, 0, View.Frame.Width, View.Frame.Height);
-            _internalMenuViewLeft.View.Frame = new RectangleF (0, 0, SlideWidth, View.Frame.Height);
-            _internalMenuViewRight.View.Frame = new RectangleF (View.Frame.Width - SlideWidth, 0, SlideWidth, View.Frame.Height);
+            _internalMenuViewLeft.View.Frame = new RectangleF (0, 0, View.Frame.Width, View.Frame.Height);
+            _internalMenuViewRight.View.Frame = new RectangleF (0, 0, View.Frame.Width, View.Frame.Height);
 
             //Add the list View
             AddChildViewController (_internalMenuViewLeft);
@@ -505,7 +529,7 @@ namespace MonoTouch.SlideoutNavigation
 
             ShowShadowRight ();
 
-            _internalMenuViewRight.View.Frame = new RectangleF (View.Frame.Width - SlideWidth, 0, SlideWidth, View.Frame.Height);
+            _internalMenuViewRight.View.Frame = new RectangleF (0, 0, View.Frame.Width, View.Frame.Height);
 
             UIView view = _internalTopView.View;
             UIView.Animate (SlideSpeed, 0, UIViewAnimationOptions.CurveEaseInOut,
