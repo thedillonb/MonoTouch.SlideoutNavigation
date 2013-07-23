@@ -25,11 +25,15 @@ namespace MonoTouch.SlideoutNavigation
         private bool _displayNavigationBarOnSideBarLeft;
         private bool _displayNavigationBarOnSideBarRight;
         private bool _shadowShown;
-        private bool _leftMenuEnabled = true;
-        private bool _rightMenuEnabled = false;
+        private bool _leftMenuEnabled = false;
+        private bool _leftMenuFullWidth = false;
         private bool _leftMenuShowing = true;
-        private bool _rightMenuShowing = true;
+        private bool _leftMenuFullScreen = false;
         private string _menuTextLeft = " < Menu Left";
+        private bool _rightMenuEnabled = false;
+        private bool _rightMenuFullWidth = false;
+        private bool _rightMenuShowing = true;
+        private bool _rightMenuFullScreen = false;
         private string _menuTextRight = "Right Menu > ";
         #endregion private attributes
         #region public attributes
@@ -46,6 +50,10 @@ namespace MonoTouch.SlideoutNavigation
             }
         }
 
+        /// <summary>
+        /// Gets or sets the height of the touch area that allows you to slide.
+        /// </summary>
+        /// <value>The height of the slide.</value>
         public float SlideHeight { get; set; }
 
         /// <summary>
@@ -75,7 +83,7 @@ namespace MonoTouch.SlideoutNavigation
                 if (value == _leftMenuEnabled)
                     return;
 
-                if (!value)
+                if (!value && _leftMenuShowing)
                     Hide ();
 
                 if (_internalTopNavigation != null && _internalTopNavigation.ViewControllers.Length > 0) {
@@ -99,7 +107,7 @@ namespace MonoTouch.SlideoutNavigation
                 if (value == _rightMenuEnabled)
                     return;
 
-                if (!value)
+                if (!value && _rightMenuShowing)
                     Hide ();
 
                 if (_internalTopNavigation != null && _internalTopNavigation.ViewControllers.Length > 0) {
@@ -109,6 +117,60 @@ namespace MonoTouch.SlideoutNavigation
 
                 _rightMenuEnabled = value;
             }
+        }
+
+        /// <summary>
+        /// Indicates or the left menu is using the full width in the design
+        /// </summary>
+        /// <value><c>true</c> if left menu is designed for full width; otherwise, <c>false</c>.</value>
+        public bool LeftMenuFullWidth { 
+            get { 
+                return _leftMenuFullWidth; 
+            } 
+            set {
+                if (_leftMenuFullWidth == value)
+                    return;
+
+                RectangleF rect;
+
+                if (value)
+                    rect = new RectangleF (0, _internalMenuViewLeft.View.Frame.Y, View.Frame.Width, View.Frame.Height);
+                else
+                    rect = new RectangleF (0, _internalMenuViewLeft.View.Frame.Y, SlideWidth, View.Frame.Height);
+
+                UIView.Animate (SlideSpeed, 0, UIViewAnimationOptions.CurveEaseInOut,
+                                () => {
+                    _internalMenuViewLeft.View.Frame = rect; }, null);
+
+                _leftMenuFullWidth = value; 
+            }
+        }
+
+        /// <summary>
+        /// Indicates or the right menu is using the full width in the design
+        /// </summary>
+        /// <value><c>true</c> if rigth menu is designed for full width; otherwise, <c>false</c>.</value>
+        public bool RightMenuFullWidth { 
+            get { 
+                return _rightMenuFullWidth; 
+            }
+            set {
+                if (_rightMenuFullWidth == value)
+                    return;
+
+                RectangleF rect;
+
+                if (value)
+                    rect = new RectangleF (0, _internalMenuViewRight.View.Frame.Y, View.Frame.Width, View.Frame.Height);
+                else
+                    rect = new RectangleF (View.Frame.Width - SlideWidth, _internalMenuViewRight.View.Frame.Y, SlideWidth, View.Frame.Height);
+
+                UIView.Animate (SlideSpeed, 0, UIViewAnimationOptions.CurveEaseInOut,
+                                () => {
+                    _internalMenuViewRight.View.Frame = rect; }, null);
+
+                _rightMenuFullWidth = value; 
+            } 
         }
 
         /// <summary>
@@ -375,8 +437,8 @@ namespace MonoTouch.SlideoutNavigation
             base.ViewDidLoad ();
 
             _internalTopView.View.Frame = new RectangleF (0, 0, View.Frame.Width, View.Frame.Height);
-            _internalMenuViewLeft.View.Frame = new RectangleF (0, 0, View.Frame.Width, View.Frame.Height);
-            _internalMenuViewRight.View.Frame = new RectangleF (0, 0, View.Frame.Width, View.Frame.Height);
+            _internalMenuViewLeft.View.Frame = new RectangleF (0, 0, SlideWidth, View.Frame.Height);
+            _internalMenuViewRight.View.Frame = new RectangleF (View.Frame.Width - SlideWidth, 0, SlideWidth, View.Frame.Height);
 
             //Add the list View
             AddChildViewController (_internalMenuViewLeft);
@@ -479,8 +541,6 @@ namespace MonoTouch.SlideoutNavigation
             //Show some shadow!
             ShowShadowLeft ();
 
-            _internalMenuViewLeft.View.Frame = new RectangleF (0, 0, SlideWidth, View.Frame.Height);
-
             UIView view = _internalTopView.View;
             UIView.Animate (SlideSpeed, 0, UIViewAnimationOptions.CurveEaseInOut,
                             () => {
@@ -491,6 +551,72 @@ namespace MonoTouch.SlideoutNavigation
                     view.Subviews [0].UserInteractionEnabled = false;
                 view.AddGestureRecognizer (_tapGesture);
             });
+        }
+
+        /// <summary>
+        /// /// Hides the top view and sets the left menu to the full screen width
+        /// </summary>
+        public void MenuLeftToFullScreen ()
+        {
+            if (_leftMenuFullScreen && _leftMenuShowing)
+                return;
+
+            if (!LeftMenuFullWidth)
+                LeftMenuFullWidth = true;
+
+            UIView view = _internalTopView.View;
+            UIView.Animate (SlideSpeed, 0, UIViewAnimationOptions.CurveEaseInOut, () => {
+                view.Frame = new RectangleF (View.Frame.Width, view.Frame.Y, view.Frame.Width, view.Frame.Height); }, null);
+
+            _leftMenuFullScreen = true;
+        }
+
+        /// <summary>
+        /// Returns the left menu and the top view to their origional size
+        /// </summary>
+        public void MenuLeftBackToNormal ()
+        {
+            if (!_leftMenuFullScreen && _leftMenuShowing)
+                return;
+
+            UIView view = _internalTopView.View;
+            UIView.Animate (SlideSpeed, 0, UIViewAnimationOptions.CurveEaseInOut, () => {
+                view.Frame = new RectangleF (SlideWidth, view.Frame.Y, view.Frame.Width, view.Frame.Height); }, null);
+
+            _leftMenuFullScreen = false;
+        }
+
+        /// <summary>
+        /// Hides the top view and sets the right menu to the full screen width
+        /// </summary>
+        public void MenuRightToFullScreen ()
+        {
+            if (_rightMenuFullScreen && _rightMenuShowing)
+                return;
+
+            if (!_rightMenuFullScreen)
+                RightMenuFullWidth = true;
+
+            UIView view = _internalTopView.View;
+            UIView.Animate (SlideSpeed, 0, UIViewAnimationOptions.CurveEaseInOut, () => {
+                view.Frame = new RectangleF (-View.Frame.Width, view.Frame.Y, view.Frame.Width, view.Frame.Height); }, null);
+
+            _rightMenuFullScreen = true;
+        }
+
+        /// <summary>
+        /// Returns the right menu and the top view to their origional size
+        /// </summary>
+        public void MenuRightBackToNormal ()
+        {
+            if (!_rightMenuFullScreen && _rightMenuShowing)
+                return;
+
+            UIView view = _internalTopView.View;
+            UIView.Animate (SlideSpeed, 0, UIViewAnimationOptions.CurveEaseInOut, () => {
+                view.Frame = new RectangleF (-SlideWidth, 0, view.Frame.Width, view.Frame.Height); }, null);
+
+            _rightMenuFullScreen = false;
         }
 
         /// <summary>
@@ -528,8 +654,6 @@ namespace MonoTouch.SlideoutNavigation
             HideLeft ();
 
             ShowShadowRight ();
-
-            _internalMenuViewRight.View.Frame = new RectangleF (0, 0, View.Frame.Width, View.Frame.Height);
 
             UIView view = _internalTopView.View;
             UIView.Animate (SlideSpeed, 0, UIViewAnimationOptions.CurveEaseInOut,
@@ -595,12 +719,7 @@ namespace MonoTouch.SlideoutNavigation
             }
 
             _internalTopNavigation = new UINavigationController (view) {
-                View =
-                                             {
-                                                 Frame = new RectangleF(0, 0,
-                                                                        _internalTopView.View.Frame.Width,
-                                                                        _internalTopView.View.Frame.Height)
-                                             }
+                View = { Frame = new RectangleF(0, 0, _internalTopView.View.Frame.Width, _internalTopView.View.Frame.Height) }
             };
             _internalTopView.AddChildViewController (_internalTopNavigation);
             _internalTopView.View.AddSubview (_internalTopNavigation.View);
