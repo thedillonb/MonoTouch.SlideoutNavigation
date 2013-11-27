@@ -151,6 +151,12 @@ namespace MonoTouch.SlideoutNavigation
         /// </value>
         public bool LayerShadowing { get; set; }
 
+		/// <summary>
+		/// Gets or sets the shadow opacity.
+		/// </summary>
+		/// <value>The shadow opacity.</value>
+		public float ShadowOpacity { get; set; }
+
         /// <summary>
         /// Gets or sets the slide speed.
         /// </summary>
@@ -220,6 +226,7 @@ namespace MonoTouch.SlideoutNavigation
             SlideWidth = 245f;
             SlideHeight = 44f;
             LayerShadowing = false;
+			ShadowOpacity = 0.5f;
 
             _internalMenuViewLeft = new ProxyNavigationController {
                 ParentController = this,
@@ -389,7 +396,7 @@ namespace MonoTouch.SlideoutNavigation
 
             _internalTopView.View.Layer.ShadowPath = UIBezierPath.FromRect (_internalTopView.View.Bounds).CGPath;
             _internalTopView.View.Layer.ShadowRadius = 4.0f;
-            _internalTopView.View.Layer.ShadowOpacity = 0.5f;
+			_internalTopView.View.Layer.ShadowOpacity = ShadowOpacity;
             _internalTopView.View.Layer.ShadowColor = UIColor.Black.CGColor;
         }
 
@@ -402,7 +409,7 @@ namespace MonoTouch.SlideoutNavigation
             _internalTopView.View.Layer.ShadowOffset = new SizeF (position, 0);
             _internalTopView.View.Layer.ShadowPath = UIBezierPath.FromRect (_internalTopView.View.Bounds).CGPath;
             _internalTopView.View.Layer.ShadowRadius = 4.0f;
-            _internalTopView.View.Layer.ShadowOpacity = 0.5f;
+			_internalTopView.View.Layer.ShadowOpacity = ShadowOpacity;
             _internalTopView.View.Layer.ShadowColor = UIColor.Black.CGColor;
 
             _shadowShown = true;
