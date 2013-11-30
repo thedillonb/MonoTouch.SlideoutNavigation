@@ -447,6 +447,8 @@ namespace MonoTouch.SlideoutNavigation
             ShowShadowLeft ();
 
             _internalMenuViewLeft.View.Frame = new RectangleF (0, 0, SlideWidth, View.Frame.Height);
+			if (MenuViewLeft != null)
+				MenuViewLeft.ViewWillAppear(true);
 
             UIView view = _internalTopView.View;
             UIView.Animate (SlideSpeed, 0, UIViewAnimationOptions.CurveEaseInOut,
@@ -457,6 +459,9 @@ namespace MonoTouch.SlideoutNavigation
                 if (view.Subviews.Length > 0)
                     view.Subviews [0].UserInteractionEnabled = false;
                 view.AddGestureRecognizer (_tapGesture);
+
+					if (MenuViewLeft != null)
+						MenuViewLeft.ViewDidAppear(true);
             });
         }
 
@@ -497,6 +502,8 @@ namespace MonoTouch.SlideoutNavigation
             ShowShadowRight ();
 
             _internalMenuViewRight.View.Frame = new RectangleF (View.Frame.Width - SlideWidth, 0, SlideWidth, View.Frame.Height);
+			if (MenuViewRight != null)
+				MenuViewRight.ViewWillAppear(true);
 
             UIView view = _internalTopView.View;
             UIView.Animate (SlideSpeed, 0, UIViewAnimationOptions.CurveEaseInOut,
@@ -506,6 +513,8 @@ namespace MonoTouch.SlideoutNavigation
                 if (view.Subviews.Length > 0)
                     view.Subviews [0].UserInteractionEnabled = false;
                 view.AddGestureRecognizer (_tapGesture);
+				if (MenuViewRight != null)
+					MenuViewRight.ViewDidAppear(true);
             });
         }
 
