@@ -446,14 +446,13 @@ namespace MonoTouch.SlideoutNavigation
             //Show some shadow!
             ShowShadowLeft ();
 
-            _internalMenuViewLeft.View.Frame = new RectangleF (0, 0, SlideWidth, View.Frame.Height);
+			_internalMenuViewLeft.View.Frame = new RectangleF (0, 0, SlideWidth, View.Bounds.Height);
 			if (MenuViewLeft != null)
 				MenuViewLeft.ViewWillAppear(true);
 
             UIView view = _internalTopView.View;
-            UIView.Animate (SlideSpeed, 0, UIViewAnimationOptions.CurveEaseInOut,
-                           () => {
-                view.Frame = new RectangleF (SlideWidth, 0, view.Frame.Width, view.Frame.Height); },
+			UIView.Animate (SlideSpeed, 0, UIViewAnimationOptions.CurveEaseInOut,
+				() => view.Frame = new RectangleF(SlideWidth, 0, view.Frame.Width, view.Frame.Height),
                            () =>
             {
                 if (view.Subviews.Length > 0)
@@ -501,14 +500,13 @@ namespace MonoTouch.SlideoutNavigation
 
             ShowShadowRight ();
 
-            _internalMenuViewRight.View.Frame = new RectangleF (View.Frame.Width - SlideWidth, 0, SlideWidth, View.Frame.Height);
+			_internalMenuViewRight.View.Frame = new RectangleF (View.Frame.Width - SlideWidth, 0, SlideWidth, View.Bounds.Height);
 			if (MenuViewRight != null)
 				MenuViewRight.ViewWillAppear(true);
 
             UIView view = _internalTopView.View;
             UIView.Animate (SlideSpeed, 0, UIViewAnimationOptions.CurveEaseInOut,
-                            () => {
-                view.Frame = new RectangleF (-SlideWidth, 0, view.Frame.Width, view.Frame.Height); },
+				() => view.Frame = new RectangleF(-SlideWidth, 0, view.Frame.Width, view.Frame.Height),
                             () => {
                 if (view.Subviews.Length > 0)
                     view.Subviews [0].UserInteractionEnabled = false;
