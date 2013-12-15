@@ -247,7 +247,7 @@ namespace MonoTouch.SlideoutNavigation
             _tapGesture.AddTarget (() => Hide ());
             _tapGesture.NumberOfTapsRequired = 1;
 
-            _panGesture = new UIPanGestureRecognizer {
+			_panGesture = new Shit {
                 Delegate = new SlideoutPanDelegate(this),
                 MaximumNumberOfTouches = 1,
                 MinimumNumberOfTouches = 1
@@ -700,6 +700,38 @@ namespace MonoTouch.SlideoutNavigation
         }
         #endregion
         #region Nested type: SlideoutPanDelegate
+
+
+		private class Shit : UIPanGestureRecognizer
+		{
+//			bool _drag;
+//			float _moveX;
+//			public override void TouchesMoved(NSSet touches, UIEvent evt)
+//			{
+//				base.TouchesMoved(touches, evt);
+//				if (this.State == UIGestureRecognizerState.Failed) return;
+//				var nowPoint = ((UITouch)touches.AnyObject).LocationInView(this.View);
+//				var prevPoint = ((UITouch)touches.AnyObject).PreviousLocationInView(this.View);
+//				_moveX += prevPoint.X - nowPoint.X;
+//
+//				if (!_drag)
+//				{
+//					if (Math.Abs(_moveX) > 20)
+//					{
+//						_drag = true;
+//					}
+//				}
+//			}
+//
+//			public override void Reset()
+//			{
+//				base.Reset();
+//				_drag = false;
+//				_moveX = 0;
+//			}
+		}
+
+
         ///<summary>
         /// A custom UIGestureRecognizerDelegate activated only when the controller 
         /// is visible or touch is within the 44.0f boundary.
@@ -714,6 +746,16 @@ namespace MonoTouch.SlideoutNavigation
             {
                 _controller = controller;
             }
+
+			public override bool ShouldBegin(UIGestureRecognizer recognizer)
+			{
+				if (_controller.Visible)
+					return true;
+
+				var rec = (UIPanGestureRecognizer)recognizer;
+				var velocity = rec.VelocityInView(_controller._internalTopView.View);
+				return Math.Abs(velocity.X) > Math.Abs(velocity.Y);
+			}
 
             public override bool ShouldReceiveTouch (UIGestureRecognizer recognizer, UITouch touch)
             {
