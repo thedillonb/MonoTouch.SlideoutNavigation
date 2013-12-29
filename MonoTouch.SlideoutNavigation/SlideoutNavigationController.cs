@@ -247,7 +247,7 @@ namespace MonoTouch.SlideoutNavigation
             _tapGesture.AddTarget (() => Hide ());
             _tapGesture.NumberOfTapsRequired = 1;
 
-			_panGesture = new Shit {
+			_panGesture = new CustomGestureRecognizer {
                 Delegate = new SlideoutPanDelegate(this),
                 MaximumNumberOfTouches = 1,
                 MinimumNumberOfTouches = 1
@@ -264,71 +264,77 @@ namespace MonoTouch.SlideoutNavigation
         /// </param>
         private void Pan (UIView view)
         {
-            if (_panGesture.State == UIGestureRecognizerState.Began) {
-                _panOriginX = view.Frame.X;
-                _ignorePan = false;
+			try
+			{
+	            if (_panGesture.State == UIGestureRecognizerState.Began) {
+	                _panOriginX = view.Frame.X;
+	                _ignorePan = false;
 
-                if (!Visible) {
-                    PointF touch = _panGesture.LocationOfTouch (0, view);
-                    if (touch.Y > SlideHeight || _internalTopNavigation.NavigationBarHidden)
-                        _ignorePan = true;
-                }
-            } else if (!_ignorePan && (_panGesture.State == UIGestureRecognizerState.Changed)) {
-                float t = _panGesture.TranslationInView (view).X;
+	                if (!Visible) {
+	                    PointF touch = _panGesture.LocationOfTouch (0, view);
+	                    if (touch.Y > SlideHeight || _internalTopNavigation.NavigationBarHidden)
+	                        _ignorePan = true;
+	                }
+	            } else if (!_ignorePan && (_panGesture.State == UIGestureRecognizerState.Changed)) {
+	                float t = _panGesture.TranslationInView (view).X;
 
-                if (RightMenuEnabled && _panOriginX + t < 0) {
-                    HideLeft ();
-                    ShowRight ();
-                } else if (LeftMenuEnabled && _panOriginX + t > 0) {
-                    HideRight ();
-                    ShowLeft ();
-                }
+	                if (RightMenuEnabled && _panOriginX + t < 0) {
+	                    HideLeft ();
+	                    ShowRight ();
+	                } else if (LeftMenuEnabled && _panOriginX + t > 0) {
+	                    HideRight ();
+	                    ShowLeft ();
+	                }
 
-                if (t < -SlideWidth) {
-                    t = -SlideWidth;
-                } else if (t > SlideWidth) {
-                    t = SlideWidth;
-                } else if ((Visible && _rightMenuShowing && t < 0) || (Visible && _leftMenuShowing && t > 0)) {
-                    t = 0;
-                }
+	                if (t < -SlideWidth) {
+	                    t = -SlideWidth;
+	                } else if (t > SlideWidth) {
+	                    t = SlideWidth;
+	                } else if ((Visible && _rightMenuShowing && t < 0) || (Visible && _leftMenuShowing && t > 0)) {
+	                    t = 0;
+	                }
 
-                if ((LeftMenuEnabled && (_panOriginX + t) >= 0) || (RightMenuEnabled && (_panOriginX + t) <= 0))
-                    view.Frame = new RectangleF (_panOriginX + t, view.Frame.Y, view.Frame.Width, view.Frame.Height);
+	                if ((LeftMenuEnabled && (_panOriginX + t) >= 0) || (RightMenuEnabled && (_panOriginX + t) <= 0))
+	                    view.Frame = new RectangleF (_panOriginX + t, view.Frame.Y, view.Frame.Width, view.Frame.Height);
 
-                ShowShadowWhileDragging ();
-            } else if (!_ignorePan &&
-                (_panGesture.State == UIGestureRecognizerState.Ended ||
-                _panGesture.State == UIGestureRecognizerState.Cancelled)) {
-                float velocity = _panGesture.VelocityInView (view).X;
+	                ShowShadowWhileDragging ();
+	            } else if (!_ignorePan &&
+	                (_panGesture.State == UIGestureRecognizerState.Ended ||
+	                _panGesture.State == UIGestureRecognizerState.Cancelled)) {
+	                float velocity = _panGesture.VelocityInView (view).X;
 
-                if (Visible) {
-                    if ((view.Frame.X < (view.Frame.Width / 2) && _leftMenuShowing) || (view.Frame.X > -(view.Frame.Width / 2) && _rightMenuShowing))
-                        Hide ();
-                    else if (_leftMenuShowing) {
-                        UIView.Animate (SlideSpeed, 0, UIViewAnimationOptions.CurveEaseInOut,
-                                        () => {
-                            view.Frame = new RectangleF (SlideWidth, view.Frame.Y, view.Frame.Width, view.Frame.Height);
-                        }, () => { });
-                    } else if (_rightMenuShowing) {
-                        UIView.Animate (SlideSpeed, 0, UIViewAnimationOptions.CurveEaseInOut,
-                                        () => {
-                            view.Frame = new RectangleF (-SlideWidth, view.Frame.Y, view.Frame.Width, view.Frame.Height);
-                        }, () => { });
-                    }
-                } else {
-                    if (velocity > 800.0f || (view.Frame.X > (view.Frame.Width / 2))) {
-                        if (LeftMenuEnabled)
-                            ShowMenuLeft ();
-                    } else if (velocity < -800.0f || (view.Frame.X < -(view.Frame.Width / 2))) {
-                        if (RightMenuEnabled)
-                            ShowMenuRight ();
-                    } else {
-                        UIView.Animate (SlideSpeed, 0, UIViewAnimationOptions.CurveEaseInOut,
-                                        () => {
-                            view.Frame = new RectangleF (0, 0, view.Frame.Width, view.Frame.Height); }, () => { });
-                    }
-                }
-            }
+	                if (Visible) {
+	                    if ((view.Frame.X < (view.Frame.Width / 2) && _leftMenuShowing) || (view.Frame.X > -(view.Frame.Width / 2) && _rightMenuShowing))
+	                        Hide ();
+	                    else if (_leftMenuShowing) {
+	                        UIView.Animate (SlideSpeed, 0, UIViewAnimationOptions.CurveEaseInOut,
+	                                        () => {
+	                            view.Frame = new RectangleF (SlideWidth, view.Frame.Y, view.Frame.Width, view.Frame.Height);
+	                        }, () => { });
+	                    } else if (_rightMenuShowing) {
+	                        UIView.Animate (SlideSpeed, 0, UIViewAnimationOptions.CurveEaseInOut,
+	                                        () => {
+	                            view.Frame = new RectangleF (-SlideWidth, view.Frame.Y, view.Frame.Width, view.Frame.Height);
+	                        }, () => { });
+	                    }
+	                } else {
+	                    if (velocity > 800.0f || (view.Frame.X > (view.Frame.Width / 2))) {
+	                        if (LeftMenuEnabled)
+	                            ShowMenuLeft ();
+	                    } else if (velocity < -800.0f || (view.Frame.X < -(view.Frame.Width / 2))) {
+	                        if (RightMenuEnabled)
+	                            ShowMenuRight ();
+	                    } else {
+	                        UIView.Animate (SlideSpeed, 0, UIViewAnimationOptions.CurveEaseInOut,
+	                                        () => {
+	                            view.Frame = new RectangleF (0, 0, view.Frame.Width, view.Frame.Height); }, () => { });
+	                    }
+	                }
+	            }
+			}
+			catch (Exception e) {
+				Console.WriteLine ("SlideoutNavigation Pan Exception: " + e);
+			}
         }
 
         /// <Docs>
@@ -702,7 +708,7 @@ namespace MonoTouch.SlideoutNavigation
         #region Nested type: SlideoutPanDelegate
 
 
-		private class Shit : UIPanGestureRecognizer
+		private class CustomGestureRecognizer : UIPanGestureRecognizer
 		{
 //			bool _drag;
 //			float _moveX;
