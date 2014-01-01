@@ -271,6 +271,8 @@ namespace MonoTouch.SlideoutNavigation
 	                _ignorePan = false;
 
 	                if (!Visible) {
+						if (_panGesture.NumberOfTouches == 0)
+							return;
 	                    PointF touch = _panGesture.LocationOfTouch (0, view);
 	                    if (touch.Y > SlideHeight || _internalTopNavigation.NavigationBarHidden)
 	                        _ignorePan = true;
