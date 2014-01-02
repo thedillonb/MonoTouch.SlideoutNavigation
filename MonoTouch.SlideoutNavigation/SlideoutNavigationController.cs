@@ -224,8 +224,8 @@ namespace MonoTouch.SlideoutNavigation
         {
             SlideSpeed = 0.2f;
             SlideWidth = 245f;
-            SlideHeight = 44f;
-            LayerShadowing = false;
+			SlideHeight = 44f + 20f;
+			LayerShadowing = true;
 			ShadowOpacity = 0.5f;
 
             _internalMenuViewLeft = new ProxyNavigationController {
@@ -280,33 +280,56 @@ namespace MonoTouch.SlideoutNavigation
 	            } else if (!_ignorePan && (_panGesture.State == UIGestureRecognizerState.Changed)) {
 	                float t = _panGesture.TranslationInView (view).X;
 
-	                if (RightMenuEnabled && _panOriginX + t < 0) {
-	                    HideLeft ();
-	                    ShowRight ();
-	                } else if (LeftMenuEnabled && _panOriginX + t > 0) {
-	                    HideRight ();
-	                    ShowLeft ();
-	                }
+	
 
-	                if (t < -SlideWidth) {
-	                    t = -SlideWidth;
-	                } else if (t > SlideWidth) {
-	                    t = SlideWidth;
-	                } else if ((Visible && _rightMenuShowing && t < 0) || (Visible && _leftMenuShowing && t > 0)) {
-	                    t = 0;
-	                }
+					if (Visible)
+					{
+						if (_rightMenuShowing)
+						{
+							if (t < 0)
+								t = 0;
+							else if (t > SlideWidth)
+								t = SlideWidth;
+						}
+						else if (_leftMenuShowing)
+						{
+							if (t > 0)
+								t = 0;
+							else if (t < -SlideWidth)
+								t = -SlideWidth;
+						}
+					}
+					else
+					{
+						if (t < -SlideWidth) 
+						{
+							t = -SlideWidth;
+						} 
+						else if (t > SlideWidth) 
+						{
+							t = SlideWidth;
+						} 
+					}
+
+					if (RightMenuEnabled && _panOriginX + t < 0) {
+						HideLeft ();
+						ShowRight ();
+						ShowShadowRight();
+					} else if (LeftMenuEnabled && _panOriginX + t > 0) {
+						HideRight ();
+						ShowLeft ();
+						ShowShadowLeft();
+					}
 
 	                if ((LeftMenuEnabled && (_panOriginX + t) >= 0) || (RightMenuEnabled && (_panOriginX + t) <= 0))
 	                    view.Frame = new RectangleF (_panOriginX + t, view.Frame.Y, view.Frame.Width, view.Frame.Height);
-
-	                ShowShadowWhileDragging ();
 	            } else if (!_ignorePan &&
 	                (_panGesture.State == UIGestureRecognizerState.Ended ||
 	                _panGesture.State == UIGestureRecognizerState.Cancelled)) {
 	                float velocity = _panGesture.VelocityInView (view).X;
 
 	                if (Visible) {
-	                    if ((view.Frame.X < (view.Frame.Width / 2) && _leftMenuShowing) || (view.Frame.X > -(view.Frame.Width / 2) && _rightMenuShowing))
+						if ((view.Frame.X < (SlideWidth / 2) && _leftMenuShowing) || (view.Frame.X > -(SlideWidth / 2) && _rightMenuShowing))
 	                        Hide ();
 	                    else if (_leftMenuShowing) {
 	                        UIView.Animate (SlideSpeed, 0, UIViewAnimationOptions.CurveEaseInOut,
@@ -320,10 +343,10 @@ namespace MonoTouch.SlideoutNavigation
 	                        }, () => { });
 	                    }
 	                } else {
-	                    if (velocity > 800.0f || (view.Frame.X > (view.Frame.Width / 2))) {
+						if (velocity > 800.0f || (view.Frame.X > (SlideWidth / 2))) {
 	                        if (LeftMenuEnabled)
 	                            ShowMenuLeft ();
-	                    } else if (velocity < -800.0f || (view.Frame.X < -(view.Frame.Width / 2))) {
+						} else if (velocity < -800.0f || (view.Frame.X < -(SlideWidth / 2))) {
 	                        if (RightMenuEnabled)
 	                            ShowMenuRight ();
 	                    } else {
@@ -392,20 +415,6 @@ namespace MonoTouch.SlideoutNavigation
         private void ShowShadowRight ()
         {
             ShowShadow (5);
-        }
-
-        /// <summary>
-        /// Shows the shadow of the top view while dragging.
-        /// </summary>
-        private void ShowShadowWhileDragging ()
-        {
-            if (!LayerShadowing)
-                return;
-
-            _internalTopView.View.Layer.ShadowPath = UIBezierPath.FromRect (_internalTopView.View.Bounds).CGPath;
-            _internalTopView.View.Layer.ShadowRadius = 4.0f;
-			_internalTopView.View.Layer.ShadowOpacity = ShadowOpacity;
-            _internalTopView.View.Layer.ShadowColor = UIColor.Black.CGColor;
         }
 
         private void ShowShadow (float position)

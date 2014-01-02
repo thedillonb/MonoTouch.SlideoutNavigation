@@ -39,7 +39,7 @@ namespace Slideout.Sample
             Menu = new SlideoutNavigationController ();
             Menu.TopView = new HomeViewController ();
             Menu.MenuViewLeft = new DummyControllerLeft ();
-            Menu.MenuViewRight = new DummyControllerRight ();
+			Menu.MenuViewRight = new DummyControllerRight ();
 
             window.RootViewController = Menu;
             window.MakeKeyAndVisible ();
