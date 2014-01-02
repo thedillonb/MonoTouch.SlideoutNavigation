@@ -36,10 +36,14 @@ namespace Slideout.Sample
         public override bool FinishedLaunching (UIApplication app, NSDictionary options)
         {
             window = new UIWindow (UIScreen.MainScreen.Bounds);
-            Menu = new SlideoutNavigationController ();
-            Menu.TopView = new HomeViewController ();
-            Menu.MenuViewLeft = new DummyControllerLeft ();
-            Menu.MenuViewRight = new DummyControllerRight ();
+//			Menu = new FlyinSlideoutNavigationController ();
+//			Menu.MainViewController = new MainNavigationController(new HomeViewController(), Menu);
+//			Menu.MenuViewController = new MenuNavigationController(new DummyControllerLeft(), Menu);
+//
+
+			Menu = new FlyinSlideoutNavigationController();
+			Menu.MainViewController = new MainNavigationController(new HomeViewController(), Menu);
+			Menu.MenuViewController = new MenuNavigationController(new DummyControllerLeft(), Menu) { NavigationBarHidden = true };
 
             window.RootViewController = Menu;
             window.MakeKeyAndVisible ();
@@ -60,36 +64,16 @@ namespace Slideout.Sample
             base.ViewDidLoad ();
 
             Root.Add (new Section () {
-                new StyledStringElement("Home", () => { NavigationController.PushViewController(new HomeViewController(), true); }),
-                new StyledStringElement("About", () => { NavigationController.PushViewController(new AboutViewController(), true); }),
-                new StyledStringElement("Stuff", () => { NavigationController.PushViewController(new StuffViewController(), true); }),
-                new StyledStringElement("Full Screen", () => { NavigationController.PushViewController(new FullscreenViewController(), true); })
+				new StyledStringElement("Home", () => NavigationController.PushViewController(new HomeViewController(), true)) { TextColor = UIColor.White, BackgroundColor = UIColor.Clear },
+				new StyledStringElement("About", () => NavigationController.PushViewController(new AboutViewController(), true)) { TextColor = UIColor.White, BackgroundColor = UIColor.Clear },
+				new StyledStringElement("Stuff", () => NavigationController.PushViewController(new StuffViewController(), true)) { TextColor = UIColor.White, BackgroundColor = UIColor.Clear },
             });
-        }
-    }
 
-    public class DummyControllerRight : DialogViewController
-    {
-        public DummyControllerRight ()
-            : base(UITableViewStyle.Plain,new RootElement(""))
-        {
-        }
+			TableView.SeparatorStyle = UITableViewCellSeparatorStyle.None;
 
-        public override void ViewDidLoad ()
-        {
-            base.ViewDidLoad ();
+			var img = new UIImageView(UIImage.FromFile("galaxy.png"));
+			TableView.BackgroundView = img;
 
-            var del = UIApplication.SharedApplication.Delegate as AppDelegate;
-
-            BooleanElement leftMenuEnabled = new BooleanElement ("Left menu enabled", del.Menu.LeftMenuEnabled);
-            leftMenuEnabled.ValueChanged += (sender, e) => {
-                del.Menu.LeftMenuEnabled = leftMenuEnabled.Value;
-            };
-
-            Root.Add (new Section () {
-                new StyledStringElement("Home", () => { NavigationController.PushViewController(new HomeViewController(), true); }),
-                leftMenuEnabled
-            });
         }
     }
 }

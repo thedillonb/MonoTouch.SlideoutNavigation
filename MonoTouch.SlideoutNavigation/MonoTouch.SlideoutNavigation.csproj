@@ -38,5 +38,10 @@
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
     <Compile Include="SlideoutNavigationController.cs" />
+    <Compile Include="MenuNavigationController.cs" />
+    <Compile Include="MainNavigationController.cs" />
+    <Compile Include="SimpleSlideoutNavigationController.cs" />
+    <Compile Include="FlyinSlideoutNavigationController.cs" />
+    <Compile Include="SlideHandle.cs" />
   </ItemGroup>
 </Project>
