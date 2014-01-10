@@ -182,16 +182,46 @@ namespace MonoTouch.SlideoutNavigation
         public float SlideWidth { get; set; }
 
         /// <summary>
-        /// Gets or sets the left menu button text.
+        ///     Gets or sets the left menu button text.
         /// </summary>
         /// <value>The left menu button text.</value>
-        public string LeftMenuButtonText { get { return _menuTextLeft; } set { _menuTextLeft = value; } }
+        public string LeftMenuButtonText
+        {
+            get { return _menuTextLeft; }
+            set
+            {
+                _menuTextLeft = value;
+                if (LeftMenuEnabled)
+                {
+                    if (_internalTopNavigation.ViewControllers == null || _internalTopNavigation.ViewControllers.Length < 1)
+                        return;
+
+                    UIViewController view = _internalTopNavigation.ViewControllers[0];
+                    view.NavigationItem.LeftBarButtonItem = LeftMenuEnabled ? CreateLeftMenuButton() : null;
+                }
+            }
+        }
 
         /// <summary>
-        /// Gets or sets the right menu button text.
+        ///     Gets or sets the right menu button text.
         /// </summary>
         /// <value>The right menu button text.</value>
-        public string RightMenuButtonText { get { return _menuTextRight; } set { _menuTextRight = value; } }
+        public string RightMenuButtonText
+        {
+            get { return _menuTextRight; }
+            set
+            {
+                _menuTextRight = value;
+                if (RightMenuEnabled)
+                {
+                    if (_internalTopNavigation.ViewControllers == null || _internalTopNavigation.ViewControllers.Length < 1)
+                        return;
+
+                    UIViewController view = _internalTopNavigation.ViewControllers[0];
+                    view.NavigationItem.RightBarButtonItem = RightMenuEnabled ? CreateRightMenuButton() : null;
+                }
+            }
+        }
 
         /// <summary>
         /// Gets or sets a value indicating whether the navigation bar is shown on the left menu.
