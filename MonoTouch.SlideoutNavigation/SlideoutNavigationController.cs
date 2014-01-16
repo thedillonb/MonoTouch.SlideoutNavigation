@@ -104,6 +104,12 @@ namespace MonoTouch.SlideoutNavigation
 				SetMainViewController(_mainViewController, false);
 		}
 
+        /// <summary>
+        /// Animate the specified menuView and mainView based on a percentage.
+        /// </summary>
+        /// <param name="menuView">The menu view.</param>
+        /// <param name="mainView">The main view.</param>
+        /// <param name="percentage">The floating point number (0-1) of how far to animate.</param>
 		protected abstract void Animate(UIView menuView, UIView mainView, float percentage);
 
 		private void Pan (UIView view)
