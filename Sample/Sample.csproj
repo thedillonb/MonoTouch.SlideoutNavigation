@@ -119,4 +119,7 @@
     <InterfaceDefinition Include="Views\StuffViewController.xib" />
     <InterfaceDefinition Include="Views\FullscreenViewController.xib" />
   </ItemGroup>
+  <ItemGroup>
+    <BundleResource Include="Default-568h%402x.png" />
+  </ItemGroup>
 </Project>

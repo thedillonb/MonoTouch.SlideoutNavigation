@@ -37,6 +37,7 @@ namespace Slideout.Sample
         {
             window = new UIWindow (UIScreen.MainScreen.Bounds);
             Menu = new SlideoutNavigationController ();
+			Menu.SlideHeight = 9999f;
             Menu.TopView = new HomeViewController ();
             Menu.MenuViewLeft = new DummyControllerLeft ();
 			Menu.MenuViewRight = new DummyControllerRight ();
