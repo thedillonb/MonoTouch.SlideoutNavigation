@@ -139,7 +139,12 @@ namespace MonoTouch.SlideoutNavigation
 			{
 				_panFirstTouch = _panGesture.LocationOfTouch (0, View);
 				_panBeganX = view.Frame.X;
-				//PanBegan(_menuViewController.View, _containerView);
+
+				if (!IsOpen)
+				{
+					if (_menuViewController != null)
+						_menuViewController.ViewWillAppear(true);
+				}
 			}
 			else if (_panGesture.State == UIGestureRecognizerState.Changed)
 			{
@@ -194,11 +199,18 @@ namespace MonoTouch.SlideoutNavigation
 			if (IsOpen)
 				return;
 
+			if (_menuViewController != null)
+				_menuViewController.ViewWillAppear(animated);
+
+
 			NSAction animation = () => Animate(_menuViewController.View, _containerView, 1);
 			NSAction completion = () =>
 			{
 				IsOpen = true;
 				_containerView.AddGestureRecognizer(_tapGesture);
+//
+				if (_menuViewController != null)
+					_menuViewController.ViewDidAppear(animated);
 			};
 
 
@@ -226,6 +238,9 @@ namespace MonoTouch.SlideoutNavigation
 			if (!IsOpen)
 				return;
 
+			if (_menuViewController != null)
+				_menuViewController.ViewWillDisappear(animated);
+
 			NSAction animation = () => Animate(_menuViewController.View, _containerView, 0);
 			NSAction completion = () =>
 			{
@@ -234,6 +249,9 @@ namespace MonoTouch.SlideoutNavigation
 				if (_containerView.Subviews.Length > 0)
 					_containerView.Subviews[0].UserInteractionEnabled = true;
 				_containerView.RemoveGestureRecognizer(_tapGesture);
+
+				if (_menuViewController != null)
+					_menuViewController.ViewDidDisappear(animated);
 			};
 
 			if (animated)
