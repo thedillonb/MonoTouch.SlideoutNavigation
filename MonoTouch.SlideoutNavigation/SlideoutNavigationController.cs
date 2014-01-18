@@ -18,6 +18,7 @@ namespace MonoTouch.SlideoutNavigation
 		private float _panTranslationX;
 		private float _panBeganX;
 		private float _slideHandleHeight;
+		private float _menuWidth;
 		private SlideHandle _slideHandle;
 
 		public bool IsOpen { get; private set; }
@@ -25,6 +26,26 @@ namespace MonoTouch.SlideoutNavigation
 		public float OpenAnimationDuration { get; set; }
 
 		public float VelocityTrigger { get; set; }
+
+		/// <summary>
+		/// Gets or sets the amount of visible space the menu is given when the user opens it.
+		/// This number is how many pixles you want the top view to slide away from the left side.
+		/// </summary>
+		/// <value>The width of the menu open.</value>
+		public float MenuWidth
+		{
+			get { return _menuWidth; }
+			set
+			{
+				_menuWidth = value;
+				if (_menuViewController != null)
+				{
+					var frame = _menuViewController.View.Frame;
+					frame.Width = value; 
+					_menuViewController.View.Frame = frame;
+				}
+			}
+		}
 
 		public SlideHandle SlideHandle
 		{
@@ -247,7 +268,8 @@ namespace MonoTouch.SlideoutNavigation
 		public void SetMenuViewController(UIViewController viewController, bool animated)
 		{
 			this.AddChildViewController(viewController);
-			viewController.View.Frame = _containerView.Bounds;
+			viewController.View.Frame = new RectangleF(View.Bounds.Location, new SizeF(MenuWidth, View.Bounds.Height));
+			viewController.View.AutoresizingMask = UIViewAutoresizing.FlexibleHeight;
 			this.View.InsertSubviewBelow(viewController.View, _containerView);
 
 			if (_menuViewController != null && viewController != _menuViewController)
