@@ -24,7 +24,7 @@ namespace MonoTouch.SlideoutNavigation
 		/// </summary>
         public SimpleSlideoutNavigationController()
         {
-			MenuOpenWidth = 280f;
+			MenuOpenWidth = 260f;
         }
 
 		/// <summary>
