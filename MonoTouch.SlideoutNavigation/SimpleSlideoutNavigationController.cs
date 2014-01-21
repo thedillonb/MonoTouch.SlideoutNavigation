@@ -26,6 +26,8 @@ namespace MonoTouch.SlideoutNavigation
 		/// <param name="percentage">The floating point number (0-1) of how far to animate.</param>
 		protected override void Animate(UIView menuView, UIView mainView, float percentage)
 		{
+            if (percentage > 1)
+                percentage = 1;
 			var x = View.Bounds.X + (MenuWidth * percentage);
 			mainView.Frame = new RectangleF(new PointF(x, mainView.Frame.Y), mainView.Frame.Size);
 		}

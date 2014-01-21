@@ -149,9 +149,9 @@ namespace MonoTouch.SlideoutNavigation
 			else if (_panGesture.State == UIGestureRecognizerState.Changed)
 			{
 				_panTranslationX = _panGesture.TranslationInView(View).X;
-				var total = IsOpen ? _panFirstTouch.X : UIScreen.MainScreen.Bounds.Width;
-				var numerator = IsOpen ? _panFirstTouch.X + _panTranslationX : _panTranslationX;
-				var percentage = numerator / total;
+                float total = MenuWidth;
+                float numerator = IsOpen ? MenuWidth + _panTranslationX : _panTranslationX;
+                float percentage = numerator / total;
 				if (percentage < 0)
 					percentage = 0;
 
@@ -161,9 +161,9 @@ namespace MonoTouch.SlideoutNavigation
 			else if (_panGesture.State == UIGestureRecognizerState.Ended || _panGesture.State == UIGestureRecognizerState.Cancelled)
 			{
 				float velocity = _panGesture.VelocityInView(View).X;
-				var total = IsOpen ? _panFirstTouch.X : UIScreen.MainScreen.Bounds.Width;
-				var numerator = IsOpen ? _panFirstTouch.X + _panTranslationX : _panTranslationX;
-				var percentage = numerator / total;
+                float total = MenuWidth;
+                float numerator = IsOpen ? MenuWidth + _panTranslationX : _panTranslationX;
+                float percentage = numerator / total;
 				var animationTime = Math.Min(1 / (Math.Abs(velocity) / 100), OpenAnimationDuration);
 
 				if (IsOpen)
