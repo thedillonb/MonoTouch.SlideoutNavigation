@@ -10,7 +10,6 @@ namespace MonoTouch.SlideoutNavigation
 
         public SimpleSlideoutNavigationController()
         {
-			HorizontalOpenOffset = 280f;
 			MenuWidth = 260f;
             ShadowEnabled = true;
         }
