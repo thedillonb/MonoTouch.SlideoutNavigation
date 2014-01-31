@@ -4,10 +4,15 @@ using MonoTouch.UIKit;
 
 namespace MonoTouch.SlideoutNavigation
 {
+	/// <summary>
+	/// A "Simple" slideout controller is a controller in which the top view simply slides
+	/// to the right when the user opens the menu. Nothing fancy.
+	/// </summary>
 	public class SimpleSlideoutNavigationController : SlideoutNavigationController
     {
-		public float HorizontalOpenOffset { get; set; }
-
+		/// <summary>
+		/// Initializes a new instance of the <see cref="MonoTouch.SlideoutNavigation.SimpleSlideoutNavigationController"/> class.
+		/// </summary>
         public SimpleSlideoutNavigationController()
         {
 			MenuWidth = 260f;
