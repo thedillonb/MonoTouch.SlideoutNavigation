@@ -26,6 +26,8 @@ namespace MonoTouch.SlideoutNavigation
 
         protected UIView ContainerView { get; private set; }
 
+        public bool PanGestureEnabled { get; set; }
+
         /// <summary>
         /// Gets or sets the amount of visible space the menu is given when the user opens it.
         /// This number is how many pixles you want the top view to slide away from the left side.
@@ -94,6 +96,7 @@ namespace MonoTouch.SlideoutNavigation
         protected SlideoutNavigationController ()
         {
             OpenAnimationDuration = 0.3f;
+            PanGestureEnabled = true;
             AnimationOption = UIViewAnimationOptions.CurveEaseInOut;
             SlideHandle = SlideHandle.Full;
             EnableInteractivePopGestureRecognizer = true;
@@ -326,6 +329,9 @@ namespace MonoTouch.SlideoutNavigation
 
             public override bool ShouldBegin(UIGestureRecognizer recognizer)
             {
+                if (!_controller.PanGestureEnabled)
+                    return false;
+
                 if (_controller.IsOpen)
                     return true;
 
@@ -336,6 +342,9 @@ namespace MonoTouch.SlideoutNavigation
 
             public override bool ShouldReceiveTouch (UIGestureRecognizer recognizer, UITouch touch)
             {
+                if (!_controller.PanGestureEnabled)
+                    return false;
+
                 if (_controller.IsOpen)
                     return true;
 
