@@ -108,9 +108,12 @@ namespace MonoTouch.SlideoutNavigation
         {
             base.ViewDidLoad();
 
+
             ContainerView = new UIView(View.Bounds);
+            ContainerView.BackgroundColor = UIColor.White;
             ContainerView.AutoresizingMask = UIViewAutoresizing.FlexibleWidth | UIViewAutoresizing.FlexibleHeight;
             View.AddSubview(ContainerView);
+            View.BackgroundColor = UIColor.White;
 
             _tapGesture = new UITapGestureRecognizer();
             _tapGesture.AddTarget (() => Close(true));
