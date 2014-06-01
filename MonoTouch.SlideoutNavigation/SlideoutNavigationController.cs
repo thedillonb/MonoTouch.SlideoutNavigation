@@ -102,16 +102,18 @@ namespace MonoTouch.SlideoutNavigation
             EnableInteractivePopGestureRecognizer = true;
             SlideHalfwayOffset = 120f;
             VelocityTrigger = 800f;
+
+            ContainerView = new UIView();
+            ContainerView.BackgroundColor = UIColor.White;
+            ContainerView.AutoresizingMask = UIViewAutoresizing.FlexibleWidth | UIViewAutoresizing.FlexibleHeight;
         }
 
         public override void ViewDidLoad()
         {
             base.ViewDidLoad();
 
+            ContainerView.Frame = View.Bounds;
 
-            ContainerView = new UIView(View.Bounds);
-            ContainerView.BackgroundColor = UIColor.White;
-            ContainerView.AutoresizingMask = UIViewAutoresizing.FlexibleWidth | UIViewAutoresizing.FlexibleHeight;
             View.AddSubview(ContainerView);
             View.BackgroundColor = UIColor.White;
 
@@ -300,7 +302,6 @@ namespace MonoTouch.SlideoutNavigation
                 _menuViewController.DidMoveToParentViewController(null);
             }
 
-            Open(animated);
             _menuViewController = viewController;
         }
 
@@ -357,7 +358,7 @@ namespace MonoTouch.SlideoutNavigation
                 {
                     // This is a hack that I don't like but need for now
                     var topNavigationController = _controller.MainViewController as UINavigationController;
-                    if (topNavigationController.ViewControllers.Length == 1)
+                    if (topNavigationController != null && topNavigationController.ViewControllers.Length == 1)
                         return true;
 
                     if (_controller.EnableInteractivePopGestureRecognizer && locationInView.X <= 10f)
