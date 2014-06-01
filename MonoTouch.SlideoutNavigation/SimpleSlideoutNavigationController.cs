@@ -15,7 +15,7 @@ namespace MonoTouch.SlideoutNavigation
         /// </summary>
         public SimpleSlideoutNavigationController()
         {
-            MenuWidth = 260f;
+            MenuWidth = 290f;
             ShadowEnabled = true;
         }
 

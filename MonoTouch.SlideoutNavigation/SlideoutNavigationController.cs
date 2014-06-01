@@ -104,17 +104,20 @@ namespace MonoTouch.SlideoutNavigation
             VelocityTrigger = 800f;
 
             ContainerView = new UIView();
-            ContainerView.BackgroundColor = UIColor.White;
-            ContainerView.AutoresizingMask = UIViewAutoresizing.FlexibleWidth | UIViewAutoresizing.FlexibleHeight;
         }
 
         public override void ViewDidLoad()
         {
             base.ViewDidLoad();
 
-            ContainerView.Frame = View.Bounds;
+            IsOpen = true;
 
-            View.AddSubview(ContainerView);
+            var containerFrame = View.Bounds;
+            containerFrame.X = View.Bounds.Width;
+            ContainerView.Frame = containerFrame;
+            ContainerView.BackgroundColor = UIColor.White;
+            ContainerView.AutoresizingMask = UIViewAutoresizing.FlexibleWidth | UIViewAutoresizing.FlexibleHeight;
+
             View.BackgroundColor = UIColor.White;
 
             _tapGesture = new UITapGestureRecognizer();
@@ -272,8 +275,24 @@ namespace MonoTouch.SlideoutNavigation
 
         public void SetMainViewController(UIViewController viewController, bool animated)
         {
-            this.AddChildViewController(viewController);
 
+            // This will only happen once...
+            if (ContainerView.Superview == null)
+            {
+                var containerFrame = View.Bounds;
+                containerFrame.X = View.Bounds.Width;
+                ContainerView.Frame = containerFrame;
+
+                View.AddSubview(ContainerView);
+                var updatedMenuFrame = new RectangleF(View.Bounds.Location, new SizeF(MenuWidth, View.Bounds.Height));
+                UIView.Animate(OpenAnimationDuration, 0, UIViewAnimationOptions.BeginFromCurrentState | AnimationOption,
+                    () => MenuViewController.View.Frame = updatedMenuFrame, null);
+
+                if (_menuViewController != null)
+                    _menuViewController.View.AutoresizingMask = UIViewAutoresizing.FlexibleHeight;
+            }
+
+            AddChildViewController(viewController);
             viewController.View.Frame = ContainerView.Bounds;
             ContainerView.AddSubview(viewController.View);
 
@@ -291,9 +310,19 @@ namespace MonoTouch.SlideoutNavigation
         public void SetMenuViewController(UIViewController viewController, bool animated)
         {
             this.AddChildViewController(viewController);
-            viewController.View.Frame = new RectangleF(View.Bounds.Location, new SizeF(MenuWidth, View.Bounds.Height));
-            viewController.View.AutoresizingMask = UIViewAutoresizing.FlexibleHeight;
-            this.View.InsertSubviewBelow(viewController.View, ContainerView);
+
+            var resizing = UIViewAutoresizing.FlexibleHeight | UIViewAutoresizing.FlexibleWidth;
+
+            var width = View.Bounds.Width;
+            if (MainViewController != null)
+            {
+                width = MenuWidth;
+                resizing = UIViewAutoresizing.FlexibleHeight;
+            }
+
+            viewController.View.Frame = new RectangleF(View.Bounds.Location, new SizeF(width, View.Bounds.Height));
+            viewController.View.AutoresizingMask = resizing;
+            View.InsertSubview(viewController.View, 0);
 
             if (_menuViewController != null && viewController != _menuViewController)
             {
@@ -304,7 +333,6 @@ namespace MonoTouch.SlideoutNavigation
 
             _menuViewController = viewController;
         }
-
 
         public override bool ShouldAutorotate ()
         {
