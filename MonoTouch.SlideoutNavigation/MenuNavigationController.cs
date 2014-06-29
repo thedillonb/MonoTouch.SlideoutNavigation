@@ -8,11 +8,6 @@ namespace MonoTouch.SlideoutNavigation
 		private readonly SlideoutNavigationController _slideoutNavigationController;
 
 		/// <summary>
-		/// The view controller transform.
-		/// </summary>
-		public Func<UIViewController, UIViewController> ViewControllerTransform;
-
-		/// <summary>
 		/// Initializes a new instance of the <see cref="MonoTouch.SlideoutNavigation.MenuNavigationController"/> class.
 		/// </summary>
 		/// <param name="rootViewController">Root view controller.</param>
@@ -21,20 +16,24 @@ namespace MonoTouch.SlideoutNavigation
 			: base(rootViewController)
 		{
 			_slideoutNavigationController = slideoutNavigationController;
-			ViewControllerTransform = x => new MainNavigationController(x, slideoutNavigationController);
 		}
 
 		/// <summary>
-		/// Pushs the view controller.
+        /// Pushes the view controller.
 		/// </summary>
 		/// <param name="viewController">View controller.</param>
 		/// <param name="animated">If set to <c>true</c> animated.</param>
 		public override void PushViewController (UIViewController viewController, bool animated)
 		{
-			if (_slideoutNavigationController == null)
-				base.PushViewController(viewController, animated);
-			else
-				_slideoutNavigationController.SetMainViewController(ViewControllerTransform(viewController), animated);
+            if (_slideoutNavigationController == null)
+            {
+                base.PushViewController(viewController, animated);
+            }
+            else
+            {
+                _slideoutNavigationController.SetMainViewController(
+                    new MainNavigationController(viewController, _slideoutNavigationController), animated);
+            }
 		}
     }
 }

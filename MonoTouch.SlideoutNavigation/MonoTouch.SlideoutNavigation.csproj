@@ -41,4 +41,11 @@
     <Compile Include="FlyinSlideoutNavigationController.cs" />
     <Compile Include="SlideHandle.cs" />
   </ItemGroup>
+  <ItemGroup>
+    <Folder Include="MonoTouch.SlideoutNavigation.bundle\" />
+  </ItemGroup>
+  <ItemGroup>
+    <BundleResource Include="MonoTouch.SlideoutNavigation.bundle\three_lines.png" />
+    <BundleResource Include="MonoTouch.SlideoutNavigation.bundle\three_lines%402x.png" />
+  </ItemGroup>
 </Project>
