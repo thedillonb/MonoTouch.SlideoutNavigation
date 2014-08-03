@@ -8,6 +8,8 @@
     <OutputType>Library</OutputType>
     <RootNamespace>MonoTouch.SlideoutNavigation</RootNamespace>
     <AssemblyName>MonoTouch.Slideout</AssemblyName>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>True</DebugSymbols>
@@ -37,8 +39,6 @@
     <Compile Include="SlideoutNavigationController.cs" />
     <Compile Include="MenuNavigationController.cs" />
     <Compile Include="MainNavigationController.cs" />
-    <Compile Include="SimpleSlideoutNavigationController.cs" />
-    <Compile Include="FlyinSlideoutNavigationController.cs" />
     <Compile Include="SlideHandle.cs" />
   </ItemGroup>
   <ItemGroup>

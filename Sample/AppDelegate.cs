@@ -33,12 +33,8 @@ namespace Slideout.Sample
         public override bool FinishedLaunching (UIApplication app, NSDictionary options)
         {
             window = new UIWindow (UIScreen.MainScreen.Bounds);
-//			Menu = new FlyinSlideoutNavigationController ();
-//			Menu.MainViewController = new MainNavigationController(new HomeViewController(), Menu);
-//			Menu.MenuViewController = new MenuNavigationController(new DummyControllerLeft(), Menu);
-//
 
-			Menu = new FlyinSlideoutNavigationController();
+            Menu = new SlideoutNavigationController();
 			Menu.MainViewController = new MainNavigationController(new HomeViewController(), Menu);
 			Menu.MenuViewController = new MenuNavigationController(new DummyControllerLeft(), Menu) { NavigationBarHidden = true };
 

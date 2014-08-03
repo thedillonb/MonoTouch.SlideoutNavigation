@@ -5,7 +5,7 @@ using MonoTouch.Foundation;
 
 namespace MonoTouch.SlideoutNavigation
 {
-    public abstract class SlideoutNavigationController : UIViewController
+    public class SlideoutNavigationController : UIViewController
     {
         private readonly static NSAction EmptyAction = () => { };
 
@@ -69,6 +69,11 @@ namespace MonoTouch.SlideoutNavigation
 
         protected float SlideHalfwayOffset { get; set; }
 
+        /// <summary>
+        /// Gets or sets a value indicating whether shadowing is enabled
+        /// </summary>
+        public bool ShadowEnabled { get; set; }
+
         public UIViewController MenuViewController
         {
             get { return _menuViewController; }
@@ -93,7 +98,7 @@ namespace MonoTouch.SlideoutNavigation
             }
         }
         
-        protected SlideoutNavigationController ()
+        public SlideoutNavigationController ()
         {
             OpenAnimationDuration = 0.3f;
             PanGestureEnabled = true;
@@ -102,6 +107,8 @@ namespace MonoTouch.SlideoutNavigation
             EnableInteractivePopGestureRecognizer = true;
             SlideHalfwayOffset = 120f;
             VelocityTrigger = 800f;
+            MenuWidth = 290f;
+            ShadowEnabled = true;
 
             ContainerView = new UIView();
         }
@@ -136,6 +143,15 @@ namespace MonoTouch.SlideoutNavigation
                 SetMenuViewController(_menuViewController, false);
             if (_mainViewController != null)
                 SetMainViewController(_mainViewController, false);
+
+            //Create some shadowing
+            if (ShadowEnabled)
+            {
+                ContainerView.Layer.ShadowOffset = new SizeF(-5, 0);
+                ContainerView.Layer.ShadowPath = UIBezierPath.FromRect(ContainerView.Bounds).CGPath;
+                ContainerView.Layer.ShadowRadius = 3.0f;
+                ContainerView.Layer.ShadowColor = UIColor.Black.CGColor;
+            }
         }
 
         /// <summary>
@@ -144,7 +160,23 @@ namespace MonoTouch.SlideoutNavigation
         /// <param name="menuView">The menu view.</param>
         /// <param name="mainView">The main view.</param>
         /// <param name="percentage">The floating point number (0-1) of how far to animate.</param>
-        protected abstract void Animate(UIView menuView, UIView mainView, float percentage);
+        private void Animate(UIView menuView, UIView mainView, float percentage)
+        {
+            if (percentage > 1)
+                percentage = 1;
+
+            // Determine if shadow should be shown
+            if (ShadowEnabled)
+            {
+                if (percentage <= 0)
+                    mainView.Layer.ShadowOpacity = 0;
+                else
+                    ContainerView.Layer.ShadowOpacity = 0.3f;
+            }
+
+            var x = View.Bounds.X + (MenuWidth * percentage);
+            mainView.Frame = new RectangleF(new PointF(x, mainView.Frame.Y), mainView.Frame.Size);
+        }
 
         private void Pan (UIView view)
         {
