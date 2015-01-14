@@ -4,7 +4,7 @@
 // actions made in the Xcode designer. If it is removed, they will be lost.
 // Manual changes to this file may not be handled correctly.
 //
-using MonoTouch.Foundation;
+using Foundation;
 
 namespace Slideout.Views
 {
@@ -12,7 +12,7 @@ namespace Slideout.Views
 	partial class StuffViewController
 	{
 		[Outlet]
-		MonoTouch.UIKit.UIWebView WebView { get; set; }
+		UIKit.UIWebView WebView { get; set; }
 		
 		void ReleaseDesignerOutlets ()
 		{

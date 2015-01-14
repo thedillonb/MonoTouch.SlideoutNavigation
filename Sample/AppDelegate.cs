@@ -1,5 +1,5 @@
-using MonoTouch.Foundation;
-using MonoTouch.UIKit;
+using Foundation;
+using UIKit;
 using MonoTouch.SlideoutNavigation;
 using MonoTouch.Dialog;
 using Slideout.Views;

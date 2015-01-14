@@ -1,21 +1,21 @@
 using System;
-using MonoTouch.UIKit;
-using System.Drawing;
-using MonoTouch.Foundation;
+using UIKit;
+using CoreGraphics;
+using Foundation;
 
 namespace MonoTouch.SlideoutNavigation
 {
     public class SlideoutNavigationController : UIViewController
     {
-        private readonly static NSAction EmptyAction = () => { };
+        private readonly static Action EmptyAction = () => { };
 
         private UIViewController _mainViewController;
         private UIViewController _menuViewController;
         private UITapGestureRecognizer _tapGesture;
         private UIPanGestureRecognizer _panGesture;
-        private float _panTranslationX;
-        private float _slideHandleHeight;
-        private float _menuWidth;
+        private nfloat _panTranslationX;
+        private nfloat _slideHandleHeight;
+        private nfloat _menuWidth;
         private SlideHandle _slideHandle;
 
         public bool IsOpen { get; private set; }
@@ -33,7 +33,7 @@ namespace MonoTouch.SlideoutNavigation
         /// This number is how many pixles you want the top view to slide away from the left side.
         /// </summary>
         /// <value>The width of the menu open.</value>
-        public float MenuWidth
+        public nfloat MenuWidth
         {
             get { return _menuWidth; }
             set
@@ -147,7 +147,7 @@ namespace MonoTouch.SlideoutNavigation
             //Create some shadowing
             if (ShadowEnabled)
             {
-                ContainerView.Layer.ShadowOffset = new SizeF(-5, 0);
+                ContainerView.Layer.ShadowOffset = new CGSize(-5, 0);
                 ContainerView.Layer.ShadowPath = UIBezierPath.FromRect(ContainerView.Bounds).CGPath;
                 ContainerView.Layer.ShadowRadius = 3.0f;
                 ContainerView.Layer.ShadowColor = UIColor.Black.CGColor;
@@ -160,7 +160,7 @@ namespace MonoTouch.SlideoutNavigation
         /// <param name="menuView">The menu view.</param>
         /// <param name="mainView">The main view.</param>
         /// <param name="percentage">The floating point number (0-1) of how far to animate.</param>
-        private void Animate(UIView menuView, UIView mainView, float percentage)
+        private void Animate(UIView menuView, UIView mainView, nfloat percentage)
         {
             if (percentage > 1)
                 percentage = 1;
@@ -175,7 +175,7 @@ namespace MonoTouch.SlideoutNavigation
             }
 
             var x = View.Bounds.X + (MenuWidth * percentage);
-            mainView.Frame = new RectangleF(new PointF(x, mainView.Frame.Y), mainView.Frame.Size);
+            mainView.Frame = new CGRect(new CGPoint(x, mainView.Frame.Y), mainView.Frame.Size);
         }
 
         private void Pan (UIView view)
@@ -191,28 +191,28 @@ namespace MonoTouch.SlideoutNavigation
             else if (_panGesture.State == UIGestureRecognizerState.Changed)
             {
                 _panTranslationX = _panGesture.TranslationInView(View).X;
-                float total = MenuWidth;
-                float numerator = IsOpen ? MenuWidth + _panTranslationX : _panTranslationX;
-                float percentage = numerator / total;
+                var total = MenuWidth;
+                var numerator = IsOpen ? MenuWidth + _panTranslationX : _panTranslationX;
+                var percentage = numerator / total;
                 if (percentage < 0)
                     percentage = 0;
 
-                NSAction animation = () => Animate(_menuViewController.View, ContainerView, percentage);
+                Action animation = () => Animate(_menuViewController.View, ContainerView, percentage);
                 UIView.Animate(0.01f, 0, UIViewAnimationOptions.BeginFromCurrentState | UIViewAnimationOptions.AllowUserInteraction, animation, EmptyAction);
             }
             else if (_panGesture.State == UIGestureRecognizerState.Ended || _panGesture.State == UIGestureRecognizerState.Cancelled)
             {
-                float velocity = _panGesture.VelocityInView(View).X;
-                float total = MenuWidth;
-                float numerator = IsOpen ? MenuWidth + _panTranslationX : _panTranslationX;
-                float percentage = numerator / total;
-                var animationTime = Math.Min(1 / (Math.Abs(velocity) / 100), OpenAnimationDuration);
+                var velocity = _panGesture.VelocityInView(View).X;
+                var total = MenuWidth;
+                var numerator = IsOpen ? MenuWidth + _panTranslationX : _panTranslationX;
+                var percentage = numerator / total;
+                var animationTime = (nfloat)Math.Min(1 / (Math.Abs(velocity) / 100), OpenAnimationDuration);
 
                 if (IsOpen)
                 {
                     if (percentage > .66f && velocity > -VelocityTrigger)
                     {
-                        NSAction animation = () => Animate(_menuViewController.View, ContainerView, 1);
+                        Action animation = () => Animate(_menuViewController.View, ContainerView, 1);
                         UIView.Animate(OpenAnimationDuration, 0, AnimationOption, animation, EmptyAction);
                     }
                     else
@@ -222,7 +222,7 @@ namespace MonoTouch.SlideoutNavigation
                 {
                     if (percentage < .33f && velocity < VelocityTrigger)
                     {
-                        NSAction animation = () => Animate(_menuViewController.View, ContainerView, 0);
+                        Action animation = () => Animate(_menuViewController.View, ContainerView, 0);
                         UIView.Animate(OpenAnimationDuration, 0, AnimationOption, animation, EmptyAction);
                     }
                     else
@@ -236,7 +236,7 @@ namespace MonoTouch.SlideoutNavigation
             Open(animated, OpenAnimationDuration);
         }
 
-        private void Open(bool animated, float animationTime)
+        private void Open(bool animated, nfloat animationTime)
         {
             if (IsOpen)
                 return;
@@ -244,8 +244,8 @@ namespace MonoTouch.SlideoutNavigation
             if (_menuViewController != null)
                 _menuViewController.ViewWillAppear(animated);
 
-            NSAction animation = () => Animate(_menuViewController.View, ContainerView, 1);
-            NSAction completion = () =>
+            Action animation = () => Animate(_menuViewController.View, ContainerView, 1);
+            Action completion = () =>
             {
                 IsOpen = true;
                 ContainerView.AddGestureRecognizer(_tapGesture);
@@ -273,7 +273,7 @@ namespace MonoTouch.SlideoutNavigation
             Close(animated, OpenAnimationDuration);
         }
 
-        private void Close(bool animated, float animationTime)
+        private void Close(bool animated, nfloat animationTime)
         {
             if (!IsOpen)
                 return;
@@ -281,8 +281,8 @@ namespace MonoTouch.SlideoutNavigation
             if (_menuViewController != null)
                 _menuViewController.ViewWillDisappear(animated);
 
-            NSAction animation = () => Animate(_menuViewController.View, ContainerView, 0);
-            NSAction completion = () =>
+            Action animation = () => Animate(_menuViewController.View, ContainerView, 0);
+            Action completion = () =>
             {
                 IsOpen = false;
 
@@ -316,7 +316,7 @@ namespace MonoTouch.SlideoutNavigation
                 ContainerView.Frame = containerFrame;
 
                 View.AddSubview(ContainerView);
-                var updatedMenuFrame = new RectangleF(View.Bounds.Location, new SizeF(MenuWidth, View.Bounds.Height));
+                var updatedMenuFrame = new CGRect(View.Bounds.Location, new CGSize(MenuWidth, View.Bounds.Height));
                 UIView.Animate(OpenAnimationDuration, 0, UIViewAnimationOptions.BeginFromCurrentState | AnimationOption,
                     () => MenuViewController.View.Frame = updatedMenuFrame, null);
 
@@ -352,7 +352,7 @@ namespace MonoTouch.SlideoutNavigation
                 resizing = UIViewAutoresizing.FlexibleHeight;
             }
 
-            viewController.View.Frame = new RectangleF(View.Bounds.Location, new SizeF(width, View.Bounds.Height));
+            viewController.View.Frame = new CGRect(View.Bounds.Location, new CGSize(width, View.Bounds.Height));
             viewController.View.AutoresizingMask = resizing;
             View.InsertSubview(viewController.View, 0);
 
