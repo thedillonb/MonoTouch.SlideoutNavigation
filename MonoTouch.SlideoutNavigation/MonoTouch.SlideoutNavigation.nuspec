@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<package xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <metadata xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">    
+    <id>@project@</id>
+    <version>@build.number@</version>
+    <authors>Dillon Buchanan</authors>
+    <owners>Dillon Buchanan</owners>
+    <summary>Slideout Navigation for Xamarin.iOS Projects</summary>
+    <projectUrl>https://github.com/thedillonb/MonoTouch.SlideoutNavigation</projectUrl>
+    <description>A slideout menu component for Xamarin's Monotouch framework.</description>
+  </metadata>
+  @files@
+</package>
