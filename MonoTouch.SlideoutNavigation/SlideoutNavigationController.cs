@@ -401,7 +401,7 @@ namespace MonoTouch.SlideoutNavigation
 
                 var rec = (UIPanGestureRecognizer)recognizer;
                 var velocity = rec.VelocityInView(_controller.ContainerView);
-                return Math.Abs(velocity.X) > Math.Abs(velocity.Y);
+                return velocity.X > 0 && Math.Abs(velocity.X) > Math.Abs(velocity.Y);
             }
 
             public override bool ShouldReceiveTouch (UIGestureRecognizer recognizer, UITouch touch)

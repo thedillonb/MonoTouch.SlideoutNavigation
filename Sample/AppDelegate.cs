@@ -37,7 +37,7 @@ namespace Slideout.Sample
             Menu = new SlideoutNavigationController();
 			Menu.MainViewController = new MainNavigationController(new HomeViewController(), Menu);
 			Menu.MenuViewController = new MenuNavigationController(new DummyControllerLeft(), Menu) { NavigationBarHidden = true };
-
+//
             window.RootViewController = Menu;
             window.MakeKeyAndVisible ();
 
@@ -59,7 +59,8 @@ namespace Slideout.Sample
             Root.Add (new Section () {
 				new StyledStringElement("Home", () => NavigationController.PushViewController(new HomeViewController(), true)) { TextColor = UIColor.White, BackgroundColor = UIColor.Clear },
 				new StyledStringElement("About", () => NavigationController.PushViewController(new AboutViewController(), true)) { TextColor = UIColor.White, BackgroundColor = UIColor.Clear },
-				new StyledStringElement("Stuff", () => NavigationController.PushViewController(new StuffViewController(), true)) { TextColor = UIColor.White, BackgroundColor = UIColor.Clear },
+                new StyledStringElement("Stuff", () => NavigationController.PushViewController(new StuffViewController(), true)) { TextColor = UIColor.White, BackgroundColor = UIColor.Clear },
+                new StyledStringElement("Table", () => NavigationController.PushViewController(new TableViewControllerController(), true)) { TextColor = UIColor.White, BackgroundColor = UIColor.Clear },
             });
 
 			TableView.SeparatorStyle = UITableViewCellSeparatorStyle.None;
