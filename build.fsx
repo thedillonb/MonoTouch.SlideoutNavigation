@@ -1,7 +1,7 @@
 #r @"packages/FAKE/tools/FakeLib.dll"
 open Fake
 
-let version = "0.1.1"
+let version = "1.0.1"
 
 Target "Clean" (fun _ ->
     !! "*/bin/"

@@ -3,6 +3,7 @@ using UIKit;
 using MonoTouch.SlideoutNavigation;
 using MonoTouch.Dialog;
 using Slideout.Views;
+using System;
 
 namespace Slideout.Sample
 {

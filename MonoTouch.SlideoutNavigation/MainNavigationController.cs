@@ -1,11 +1,10 @@
 using UIKit;
+using System;
 
 namespace MonoTouch.SlideoutNavigation
 {
 	public class MainNavigationController : UINavigationController
 	{
-		private readonly SlideoutNavigationController _slideoutNavigationController;
-
 		/// <summary>
 		/// Initializes a new instance of the <see cref="MonoTouch.SlideoutNavigation.MenuNavigationController"/> class.
 		/// </summary>
@@ -26,8 +25,7 @@ namespace MonoTouch.SlideoutNavigation
         public MainNavigationController(UIViewController rootViewController, SlideoutNavigationController slideoutNavigationController, UIBarButtonItem openMenuButton)
             : base(rootViewController)
         {
-            _slideoutNavigationController = slideoutNavigationController;
-            openMenuButton.Clicked += (s, e) => _slideoutNavigationController.Open(true);
+            openMenuButton.Clicked += (s, e) => slideoutNavigationController.Open(true);
             rootViewController.NavigationItem.LeftBarButtonItem = openMenuButton;
         }
 
